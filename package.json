@@ -1,0 +1,23 @@
+{
+  "name": "babl-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "build": "webpack --config ./webpack-config/webpack.prod.js",
+    "dev": "webpack serve --config ./webpack-config/webpack.dev.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "html-webpack-plugin": "^5.6.3",
+    "socket.io-client": "^4.8.1",
+    "three": "^0.171.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.2.0"
+  }
+}

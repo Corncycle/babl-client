@@ -1,0 +1,57 @@
+* {
+    box-sizing: border-box;
+}
+
+input {
+    all: unset;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    background: beige;
+}
+
+.babl-container {
+    margin-top: 40px;
+    display: flex;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-canvas {
+    border: 1px solid black;
+    width: 600px;
+    height: 450px;
+}
+
+.chat-container {
+    border: 1px solid black;
+    border-top: none;
+    height: 200px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages-container {
+    flex-grow: 1;
+}
+
+.chat-input-container {
+    border-top: 1px solid black;
+}
+
+.chat-input {
+    padding: 4px;
+    width: 100%;
+}
+
+.side-panel {
+    border: 1px solid black;
+    border-left: none;
+    width: 200px;
+}
