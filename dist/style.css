@@ -38,7 +38,12 @@ body {
 }
 
 .chat-messages-container {
+    line-height: 1.2em;
+    padding: 4px;
+    gap: 10px;
     flex-grow: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .chat-input-container {
