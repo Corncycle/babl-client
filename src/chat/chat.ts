@@ -1,16 +1,22 @@
 import { Socket } from 'socket.io-client'
+import wordData from './le4raw.txt?raw'
 
 const messagesContainerElm = document.querySelector('.chat-messages-container')!
 const inputElm: HTMLInputElement = document.querySelector('.chat-input')!
+const decoratedElm: HTMLDivElement = document.querySelector(
+  '.decorated-chat-display'
+)!
 const formElm: HTMLFormElement = document.querySelector('.chat-form')!
 
 export const connectChat = (socket: Socket) => {
-  inputElm.addEventListener('input', (e) => {})
+  inputElm.addEventListener('beforeinput', beforeTextInput)
+  inputElm.addEventListener('input', onTextInput)
 
   formElm.addEventListener('submit', (e) => {
     e.preventDefault()
     socket.emit('chat', inputElm.value)
     inputElm.value = ''
+    decoratedElm.innerHTML = ''
   })
 
   socket.on('chat', (msg) => {
@@ -20,8 +26,60 @@ export const connectChat = (socket: Socket) => {
   })
 }
 
+const beforeTextInput = (e: InputEvent) => {
+  if (e.data && e.data.length > 1) {
+    e.preventDefault()
+    return
+  }
+  if (e.data && !/[a-zA-z ]/.test(e.data)) {
+    e.preventDefault()
+    return
+  }
+  if (e.data && inputElm.value.length >= 32) {
+    e.preventDefault()
+    return
+  }
+}
+
+// we don't need to vet the event here because all input vetting should be done
+// in `beforeTextInput`. this event just keeps the decorated elm in sync with
+// the actual input elm
+const onTextInput = (e?: Event) => {
+  decoratedElm.replaceChildren(...decorateText(inputElm.value))
+}
+
+const decorateText = (text: string) => {
+  const words = text.split(' ')
+  console.log(words)
+  const newChildren = []
+  for (const word of words) {
+    let wordElm = document.createElement('span')
+    if (!wordSet.has(word.toLowerCase())) {
+      wordElm.classList.add('chat-input-invalid')
+    }
+    wordElm.innerText = word
+    newChildren.push(wordElm)
+    let spaceElm = document.createElement('span')
+    spaceElm.innerText = ' '
+    spaceElm.classList.add('chat-input-space')
+    newChildren.push(spaceElm)
+  }
+  return newChildren
+}
+
 const pushMessage = (msgText: string) => {
   const msgElm = document.createElement('div')
   msgElm.textContent = msgText
   messagesContainerElm.append(msgElm)
 }
+
+// webpack gives us le4raw.txt as a data uri, ie
+// data:text/plain;base64,YQphYQphYWEKYWFoCmFhaHMKY ...
+// so we just trim the first 23 characters "data:text/plain;base64," and base64 decode the data string lol
+// there's probably a better way to do this
+export const wordSet = new Set(atob(wordData.substring(23)).split(/\r?\n/))
+
+onTextInput()
+
+console.log(wordData)
+console.log(wordSet.size)

@@ -9,6 +9,10 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.txt/,
+        type: 'asset/inline',
+      },
     ],
   },
   resolve: {

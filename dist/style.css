@@ -48,11 +48,35 @@ body {
 
 .chat-input-container {
     border-top: 1px solid black;
+    position: relative;
+    height: calc(1em + 2 * 4px);
 }
 
 .chat-input {
+    position: absolute;
+    inset: 0;
     padding: 4px;
-    width: 100%;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+}
+
+.chat-input-invalid {
+    color: red;
+}
+
+.chat-input-space {
+    white-space: pre;
+}
+
+.decorated-chat-display {
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    
+    position: absolute;
+    inset: 0;
+    padding: 4px;
+    text-decoration: none;
 }
 
 .side-panel {
