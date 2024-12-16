@@ -11,6 +11,9 @@ const formElm: HTMLFormElement = document.querySelector('.chat-form')!
 export const connectChat = (socket: Socket) => {
   inputElm.addEventListener('beforeinput', beforeTextInput)
   inputElm.addEventListener('input', onTextInput)
+  inputElm.addEventListener('scroll', () => {
+    syncScrollState()
+  })
 
   formElm.addEventListener('submit', (e) => {
     e.preventDefault()
@@ -35,7 +38,7 @@ const beforeTextInput = (e: InputEvent) => {
     e.preventDefault()
     return
   }
-  if (e.data && inputElm.value.length >= 32) {
+  if (e.data && inputElm.value.length >= 50) {
     e.preventDefault()
     return
   }
@@ -45,17 +48,29 @@ const beforeTextInput = (e: InputEvent) => {
 // in `beforeTextInput`. this event just keeps the decorated elm in sync with
 // the actual input elm
 const onTextInput = (e?: Event) => {
+  syncScrollState()
   decoratedElm.replaceChildren(...decorateText(inputElm.value))
+}
+
+// sync the scroll state between the input elm and the display elm.
+// this should be done on text input (because overflow could scroll) and
+// on manually scrolling the input element itself
+const syncScrollState = () => {
+  decoratedElm.scrollLeft = inputElm.scrollLeft
+  console.log(inputElm.scrollLeft)
 }
 
 const decorateText = (text: string) => {
   const words = text.split(' ')
-  console.log(words)
   const newChildren = []
   for (const word of words) {
     let wordElm = document.createElement('span')
     if (!wordSet.has(word.toLowerCase())) {
-      wordElm.classList.add('chat-input-invalid')
+      if (word.length <= 4) {
+        wordElm.classList.add('chat-input-invalid')
+      } else {
+        wordElm.classList.add('chat-input-invalid-long')
+      }
     }
     wordElm.innerText = word
     newChildren.push(wordElm)
@@ -80,6 +95,3 @@ const pushMessage = (msgText: string) => {
 export const wordSet = new Set(atob(wordData.substring(23)).split(/\r?\n/))
 
 onTextInput()
-
-console.log(wordData)
-console.log(wordSet.size)

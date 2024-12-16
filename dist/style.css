@@ -13,6 +13,7 @@ body {
 }
 
 .babl-container {
+    border: 1px solid black;
     margin-top: 40px;
     display: flex;
 }
@@ -24,13 +25,15 @@ body {
 
 .game-canvas {
     border: 1px solid black;
+    border-right: none;
+    border-bottom: none;
     width: 600px;
     height: 450px;
 }
 
 .chat-container {
     border: 1px solid black;
-    border-top: none;
+    border-right: none;
     height: 200px;
 
     display: flex;
@@ -38,6 +41,9 @@ body {
 }
 
 .chat-messages-container {
+    font-size: 1.2rem;
+
+    width: 600px;
     line-height: 1.2em;
     padding: 4px;
     gap: 10px;
@@ -49,19 +55,29 @@ body {
 .chat-input-container {
     border-top: 1px solid black;
     position: relative;
-    height: calc(1em + 2 * 4px);
+    height: calc(1.5rem + 2 * 0.4rem);
+}
+
+/* shared styles for chat input and decorated chat display */
+.chat-input, .decorated-chat-display {
+    font-family: monospace;
+    font-size: 1.2rem;
+    position: absolute;
+    inset: 0;
+    padding: 0.4rem;
+    text-decoration: none;
 }
 
 .chat-input {
-    position: absolute;
-    inset: 0;
-    padding: 4px;
     -webkit-text-fill-color: transparent;
-    text-decoration: none;
 }
 
 .chat-input-invalid {
     color: red;
+}
+
+.chat-input-invalid-long {
+    color: firebrick;
 }
 
 .chat-input-space {
@@ -72,15 +88,18 @@ body {
     display: flex;
     align-items: center;
     pointer-events: none;
-    
-    position: absolute;
-    inset: 0;
-    padding: 4px;
-    text-decoration: none;
+    overflow-x: scroll;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.decorated-chat-display::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .side-panel {
     border: 1px solid black;
-    border-left: none;
-    width: 200px;
+    width: 300px;
 }
