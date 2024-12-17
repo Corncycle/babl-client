@@ -11,10 +11,10 @@ module.exports = merge(common, {
   experiments: {
     outputModule: true,
   },
-  // externals: {
-  //   three: 'module three',
-  //   'explorer-debugger': './debug/ProdDebugger.ts',
-  // },
+  externals: {
+    three: 'module three',
+    //   'explorer-debugger': './debug/ProdDebugger.ts',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.prod.html'), // this template should include a cdn link to a three import

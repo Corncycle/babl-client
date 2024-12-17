@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io-client'
 import wordData from './le4raw.txt?raw'
 
+const chatContainer = document.querySelector('.chat-container')!
 const messagesContainerElm = document.querySelector('.chat-messages-container')!
 const inputElm: HTMLInputElement = document.querySelector('.chat-input')!
 const decoratedElm: HTMLDivElement = document.querySelector(
@@ -38,7 +39,7 @@ const beforeTextInput = (e: InputEvent) => {
     e.preventDefault()
     return
   }
-  if (e.data && inputElm.value.length >= 50) {
+  if (e.data && inputElm.value.length >= 48) {
     e.preventDefault()
     return
   }
@@ -57,7 +58,6 @@ const onTextInput = (e?: Event) => {
 // on manually scrolling the input element itself
 const syncScrollState = () => {
   decoratedElm.scrollLeft = inputElm.scrollLeft
-  console.log(inputElm.scrollLeft)
 }
 
 const decorateText = (text: string) => {

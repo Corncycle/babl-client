@@ -6,11 +6,20 @@
     <title>Babl Prod</title>
     <link rel="stylesheet" href="meyer-reset.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="chat.png">
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.171.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.171.0/examples/jsm/"
+          }
+        }
+    </script>
 </head>
 <body>
     <div class="babl-container">
         <div class="left-container">
-            <div class="game-canvas"></div>
+            <div class="game-canvas" tabindex="0"></div>
             <div class="chat-container">
                 <div class="chat-messages-container"></div>
                 <div class="chat-input-container">

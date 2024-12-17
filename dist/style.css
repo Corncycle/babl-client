@@ -41,11 +41,12 @@ body {
 }
 
 .chat-messages-container {
+    font-family: monospace;
     font-size: 1.2rem;
 
     width: 600px;
     line-height: 1.2em;
-    padding: 4px;
+    padding: 0.4rem;
     gap: 10px;
     flex-grow: 1;
     overflow-y: scroll;
