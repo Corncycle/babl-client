@@ -11,12 +11,19 @@ module.exports = {
       },
       {
         test: /\.txt/,
-        type: 'asset/inline',
+        type: 'asset/source',
+      },
+      {
+        test: /\.(vert|frag)/,
+        type: 'asset/source',
       },
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensionAlias: {
+      '.js': ['.js', '.ts'],
+    },
+    extensions: ['.ts', '.js'],
   },
   output: {
     filename: 'bundle.js',

@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io-client'
 import wordData from './le4raw.txt?raw'
 
+const canvasContainer: HTMLDivElement = document.querySelector('.game-canvas')!
 const chatContainer = document.querySelector('.chat-container')!
 const messagesContainerElm = document.querySelector('.chat-messages-container')!
 const inputElm: HTMLInputElement = document.querySelector('.chat-input')!
@@ -21,6 +22,7 @@ export const connectChat = (socket: Socket) => {
     socket.emit('chat', inputElm.value)
     inputElm.value = ''
     decoratedElm.innerHTML = ''
+    canvasContainer.focus()
   })
 
   socket.on('chat', (msg) => {

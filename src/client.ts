@@ -4,6 +4,10 @@ import { connectCanvas } from './canvas/canvas'
 
 const socket = io('http://localhost:9090')
 
+socket.on('message', (msg) => {
+  console.log(msg)
+})
+
 connectChat(socket)
 
 connectCanvas(socket)

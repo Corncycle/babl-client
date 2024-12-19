@@ -29,6 +29,9 @@ body {
     border-bottom: none;
     width: 600px;
     height: 450px;
+
+    /* necessary because we give this element a tabindex for input capturing */
+    outline: none !important;
 }
 
 .chat-container {
