@@ -90,10 +90,6 @@ const pushMessage = (msgText: string) => {
   messagesContainerElm.append(msgElm)
 }
 
-// webpack gives us le4raw.txt as a data uri, ie
-// data:text/plain;base64,YQphYQphYWEKYWFoCmFhaHMKY ...
-// so we just trim the first 23 characters "data:text/plain;base64," and base64 decode the data string lol
-// there's probably a better way to do this
-export const wordSet = new Set(atob(wordData.substring(23)).split(/\r?\n/))
+export const wordSet = new Set(wordData.split(/\r?\n/))
 
 onTextInput()
