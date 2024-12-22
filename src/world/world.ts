@@ -3,6 +3,8 @@ import { cubeFactory } from '../canvas/util.js'
 import { CameraHelper } from './camera.js'
 import { Player } from './player.js'
 import { Socket } from 'socket.io-client'
+import EventHelper from './eventHelper.js'
+import { InputHelper } from './input.js'
 
 export class World {
   scene: THREE.Scene
@@ -10,7 +12,9 @@ export class World {
   renderer: THREE.WebGLRenderer
   player?: Player
 
-  playerEntityIdToMeshMap: Map<number, THREE.Mesh> // TODO: this should just be a map to player probably
+  eventHelper: EventHelper
+  inputHelper: InputHelper
+  playerEntityIdToPlayerMap: Map<number, Player>
 
   constructor(
     container: HTMLDivElement,
@@ -18,7 +22,9 @@ export class World {
     socket: Socket
   ) {
     this.scene = new THREE.Scene()
-    this.playerEntityIdToMeshMap = new Map()
+    this.inputHelper = new InputHelper(container)
+    this.eventHelper = new EventHelper(socket, 20)
+    this.playerEntityIdToPlayerMap = new Map()
 
     for (let i = -2; i <= 2; i++) {
       this.scene.add(cubeFactory(1, i, 0, -0.5))
@@ -36,10 +42,13 @@ export class World {
         e.entityId,
         new THREE.Vector3(e.x, e.y, e.z),
         socket,
-        container
+        container,
+        this.inputHelper,
+        this.eventHelper,
+        this.cameraHelper
       )
       this.scene.add(this.player.mesh)
-      this.playerEntityIdToMeshMap.set(e.entityId, this.player.mesh)
+      this.playerEntityIdToPlayerMap.set(e.entityId, this.player)
     })
 
     socket.on('remotePlayersInitialize', (playersData) => {
@@ -50,7 +59,7 @@ export class World {
           new THREE.Vector3(e.x, e.y, e.z)
         )
         this.scene.add(remotePlayer.mesh)
-        this.playerEntityIdToMeshMap.set(e.entityId, remotePlayer.mesh)
+        this.playerEntityIdToPlayerMap.set(e.entityId, remotePlayer)
       })
     })
 
@@ -63,33 +72,47 @@ export class World {
         new THREE.Vector3(e.x, e.y, e.z)
       )
       this.scene.add(remotePlayer.mesh)
-      this.playerEntityIdToMeshMap.set(e.entityId, remotePlayer.mesh)
+      this.playerEntityIdToPlayerMap.set(e.entityId, remotePlayer)
     })
 
     socket.on('playerUpdate', (e) => {
-      const m = this.playerEntityIdToMeshMap.get(e.entityId)
-      if (!m) {
+      const p = this.playerEntityIdToPlayerMap.get(e.entityId)
+      if (!p) {
         return
       }
-      m.position.x = e.x
-      m.position.y = e.y
-      m.position.z = e.z
+      p.mesh.position.x = e.x
+      p.mesh.position.y = e.y
+      p.mesh.position.z = e.z
+
+      if (e.xv !== undefined) {
+        p.remoteXv = e.xv
+      }
+      if (e.yv !== undefined) {
+        p.remoteYv = e.yv
+      }
+      if (e.zv !== undefined) {
+        p.remoteZv = e.zv
+      }
     })
 
     socket.on('remotePlayerDespawn', (id) => {
       console.log(`player ${id} disconnected`)
-      const despawnedPlayerMesh = this.playerEntityIdToMeshMap.get(id)
-      if (!despawnedPlayerMesh) {
+      const despawnedPlayer = this.playerEntityIdToPlayerMap.get(id)
+      if (!despawnedPlayer) {
         return
       }
-      this.playerEntityIdToMeshMap.delete(id)
-      this.scene.remove(despawnedPlayerMesh) // TODO: make sure this cleanup is sufficient
+      this.playerEntityIdToPlayerMap.delete(id)
+      this.scene.remove(despawnedPlayer.mesh) // TODO: make sure this cleanup is sufficient
     })
   }
 
   process(delta: number) {
     this.cameraHelper.process(delta)
-    this.player?.process(delta)
+    // this.player?.process(delta)
+
+    for (const player of this.playerEntityIdToPlayerMap.values()) {
+      player.process(delta)
+    }
   }
 
   render() {

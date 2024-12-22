@@ -25,8 +25,8 @@ export const connectChat = (socket: Socket) => {
     canvasContainer.focus()
   })
 
-  socket.on('chat', (msg) => {
-    pushMessage(msg)
+  socket.on('chat', (e) => {
+    pushMessage(e.msg, e.unit)
 
     messagesContainerElm.scrollTo(0, messagesContainerElm.scrollHeight)
   })
@@ -84,10 +84,19 @@ const decorateText = (text: string) => {
   return newChildren
 }
 
-const pushMessage = (msgText: string) => {
-  const msgElm = document.createElement('div')
+const pushMessage = (msgText: string, unitName?: string) => {
+  const containerElm = document.createElement('div')
+  if (unitName) {
+    const unitElm = document.createElement('span')
+    unitElm.textContent = unitName + ': '
+    unitElm.classList.add('chat-message-unit')
+    containerElm.append(unitElm)
+  }
+  const msgElm = document.createElement('span')
   msgElm.textContent = msgText
-  messagesContainerElm.append(msgElm)
+
+  containerElm.append(msgElm)
+  messagesContainerElm.append(containerElm)
 }
 
 export const wordSet = new Set(wordData.split(/\r?\n/))

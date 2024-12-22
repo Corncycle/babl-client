@@ -4,12 +4,18 @@ import vertexShaderRaw from './shaders/player.vert?raw'
 import fragmentShaderRaw from './shaders/player.frag?raw'
 import { SyncedObjectOptions } from './syncedEntity.js'
 import { Socket } from 'socket.io-client'
-import { BooleanDirection, setupInput } from './input.js'
+import { InputHelper } from './input.js'
+import EventHelper from './eventHelper.js'
+import { CameraHelper } from './camera.js'
 
-interface PlayerUpdate {
+export interface PlayerUpdate {
+  entityId: number
   x: number
   y: number
   z: number
+  xv?: number
+  yv?: number
+  zv?: number
 }
 
 export class Player {
@@ -19,17 +25,31 @@ export class Player {
   entityId: number
 
   mesh: THREE.Mesh
-  pressed?: BooleanDirection
 
   sendServerUpdates: boolean
   socket?: Socket
+
+  inputHelper?: InputHelper
+  eventHelper?: EventHelper
+  cameraHelper?: CameraHelper
+
+  pressed?: { [pressedValue: string]: boolean }
+  justPressed?: { [pressedValue: string]: boolean }
+  justReleased?: { [pressedValue: string]: boolean }
+
+  remoteXv: number
+  remoteYv: number
+  remoteZv: number
 
   constructor(
     options: SyncedObjectOptions,
     entityId: number,
     position: THREE.Vector3,
     socket?: Socket,
-    container?: HTMLDivElement
+    container?: HTMLDivElement,
+    inputHelper?: InputHelper,
+    eventHelper?: EventHelper,
+    cameraHelper?: CameraHelper
   ) {
     this.entityId = entityId
     this.sendServerUpdates = options.sendServerUpdates ?? false
@@ -66,46 +86,91 @@ export class Player {
     this.mesh = new THREE.Mesh(Player.geometry, Player.material)
     this.mesh.position.set(position.x, position.y, position.z)
 
-    if (options.sendServerUpdates) {
-      const { pressed } = setupInput(container!)
-      this.pressed = pressed
+    if (options.sendServerUpdates && inputHelper) {
+      this.inputHelper = inputHelper
+      // const { pressed } = setupInput(container!)
+      this.pressed = inputHelper.pressed
+      this.justPressed = inputHelper.justPressed
+      this.justReleased = inputHelper.justReleased
     }
 
     this.socket = socket
+    this.eventHelper = eventHelper
+    this.cameraHelper = cameraHelper
+    this.cameraHelper?.moveTo(this.mesh.position.x, this.mesh.position.y)
+
+    this.remoteXv = 0
+    this.remoteYv = 0
+    this.remoteZv = 0
   }
 
   process(delta: number) {
     if (this.sendServerUpdates) {
+      // LOCAL PLAYER UPDATES
       if (!this.pressed) {
         return
       }
 
+      // if no current input is pressed and no key was just released, just abort
+      if (
+        Object.values(this.pressed).every((val) => val === false) &&
+        Object.values(this.justReleased!).every((val) => val === false)
+      ) {
+        return
+      }
+
+      // if (
+      //   Object.values(this.pressed).every((val) => val === false) &&
+      //   Object.values(this.justReleased!).some((val) => val === true)
+      // ) {
+      //   console.log(
+      //     "no value is currently pressed but we're sending an event because some key was just released ^_^"
+      //   )
+      // }
+
+      let xv = 0
+      let yv = 0
       let updatedPosition = false
       if (this.pressed.left) {
         updatedPosition = true
         this.mesh.position.x -= delta
+        xv -= 1
       }
       if (this.pressed.right) {
         updatedPosition = true
         this.mesh.position.x += delta
+        xv += 1
       }
       if (this.pressed.up) {
         updatedPosition = true
         this.mesh.position.y += delta
+        yv += 1
       }
       if (this.pressed.down) {
         updatedPosition = true
         this.mesh.position.y -= delta
+        yv -= 1
       }
 
-      if (this.socket && updatedPosition) {
-        this.socket.emit('playerUpdate', {
-          entityId: this.entityId,
-          x: this.mesh.position.x,
-          y: this.mesh.position.y,
-          z: this.mesh.position.z,
-        })
-      }
+      this.eventHelper?.setLocalPlayerPosition(
+        this.entityId,
+        this.mesh.position.x,
+        this.mesh.position.y,
+        this.mesh.position.z
+      )
+      this.cameraHelper?.moveTo(this.mesh.position.x, this.mesh.position.y)
+
+      this.eventHelper?.setLocalPlayerVelocity(xv, yv, 0)
+    } else {
+      // REMOTE PLAYER UPDATES
+      this.mesh.position.x += delta * this.remoteXv
+      this.mesh.position.y += delta * this.remoteYv
+      this.mesh.position.z += delta * this.remoteZv
     }
   }
+
+  // call this if we detect any movement to adjust the character mesh accordingly
+  // this should also be called if any movement key was just released so we can
+  // properly send that update to the server (that the local player is not moving)
+  moveFromCurrentInput() {}
 }

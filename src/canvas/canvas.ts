@@ -19,6 +19,8 @@ export const connectCanvas = (socket: Socket) => {
     world.process(delta)
     world.render()
 
+    world.inputHelper.clearJustPressedAndReleased()
+
     requestAnimationFrame(animate)
   }
 
