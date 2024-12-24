@@ -1,7 +1,10 @@
 import { Socket } from 'socket.io-client'
 import wordData from './le4raw.txt?raw'
+import { World } from '../world/world.js'
 
-const canvasContainer: HTMLDivElement = document.querySelector('.game-canvas')!
+const canvasContainer: HTMLDivElement = document.querySelector(
+  '.game-canvas-container'
+)!
 const chatContainer = document.querySelector('.chat-container')!
 const messagesContainerElm = document.querySelector('.chat-messages-container')!
 const inputElm: HTMLInputElement = document.querySelector('.chat-input')!
@@ -10,7 +13,7 @@ const decoratedElm: HTMLDivElement = document.querySelector(
 )!
 const formElm: HTMLFormElement = document.querySelector('.chat-form')!
 
-export const connectChat = (socket: Socket) => {
+export const connectChat = (socket: Socket, world: World) => {
   inputElm.addEventListener('beforeinput', beforeTextInput)
   inputElm.addEventListener('input', onTextInput)
   inputElm.addEventListener('scroll', () => {
@@ -26,6 +29,10 @@ export const connectChat = (socket: Socket) => {
   })
 
   socket.on('chat', (e) => {
+    world.postPlayerMessage(e.unit, e.msg)
+  })
+
+  socket.on('localMessage', (e) => {
     pushMessage(e.msg, e.unit)
 
     messagesContainerElm.scrollTo(0, messagesContainerElm.scrollHeight)

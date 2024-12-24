@@ -8,6 +8,5 @@ socket.on('message', (msg) => {
   console.log(msg)
 })
 
-connectChat(socket)
-
-connectCanvas(socket)
+const world = connectCanvas(socket)
+connectChat(socket, world)

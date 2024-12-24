@@ -23,15 +23,21 @@ body {
     flex-direction: column;
 }
 
-.game-canvas {
+.game-canvas-container {
     border: 1px solid black;
     border-right: none;
     border-bottom: none;
     width: 600px;
     height: 450px;
+    position: relative;
 
     /* necessary because we give this element a tabindex for input capturing */
     outline: none !important;
+}
+
+.game-text-canvas {
+    position: absolute;
+    top: 0;
 }
 
 .chat-container {
@@ -110,4 +116,25 @@ body {
 .side-panel {
     border: 1px solid black;
     width: 300px;
+}
+
+/* GAME LOGIC CSS FROM THIS POINT ON */
+.user-name-tag {
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.user-local-name-tag {
+    color: gold;
+    font-weight: bold;
+}
+
+.user-remote-name-tag {
+    color: white;
+}
+
+.user-message {
+    font-size: 16px;
+    font-family: monospace;
+    color: white;
 }

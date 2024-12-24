@@ -7,6 +7,9 @@ import { Socket } from 'socket.io-client'
 import { InputHelper } from './input.js'
 import EventHelper from './eventHelper.js'
 import { CameraHelper } from './camera.js'
+import { TextHelper } from './text/text.js'
+// import { createTextMaterial } from './util.js'
+// import { fontGeo } from './util.js'
 
 export interface PlayerUpdate {
   entityId: number
@@ -24,6 +27,7 @@ export class Player {
 
   entityId: number
 
+  object3d: THREE.Object3D
   mesh: THREE.Mesh
 
   sendServerUpdates: boolean
@@ -49,7 +53,8 @@ export class Player {
     container?: HTMLDivElement,
     inputHelper?: InputHelper,
     eventHelper?: EventHelper,
-    cameraHelper?: CameraHelper
+    cameraHelper?: CameraHelper,
+    textHelper?: TextHelper
   ) {
     this.entityId = entityId
     this.sendServerUpdates = options.sendServerUpdates ?? false
@@ -83,12 +88,15 @@ export class Player {
     // console.log(tetraGeo)
 
     // const material = new THREE.MeshBasicMaterial({ color: 0xe0e0ff })
+    this.object3d = new THREE.Object3D()
     this.mesh = new THREE.Mesh(Player.geometry, Player.material)
-    this.mesh.position.set(position.x, position.y, position.z)
+    this.object3d.add(this.mesh)
+    this.object3d.position.set(position.x, position.y, position.z)
+
+    // const textMesh = new THREE.Mesh(fontGeo, new THREE.MeshNormalMaterial())
 
     if (options.sendServerUpdates && inputHelper) {
       this.inputHelper = inputHelper
-      // const { pressed } = setupInput(container!)
       this.pressed = inputHelper.pressed
       this.justPressed = inputHelper.justPressed
       this.justReleased = inputHelper.justReleased
@@ -97,14 +105,28 @@ export class Player {
     this.socket = socket
     this.eventHelper = eventHelper
     this.cameraHelper = cameraHelper
-    this.cameraHelper?.moveTo(this.mesh.position.x, this.mesh.position.y)
+    if (this.sendServerUpdates) {
+      this.cameraHelper?.moveTo(
+        this.object3d.position.x,
+        this.object3d.position.y
+      )
+    }
 
     this.remoteXv = 0
     this.remoteYv = 0
     this.remoteZv = 0
+
+    textHelper!.initializePlayerLabels(this)
   }
 
   process(delta: number) {
+    this.moveFromCurrentInput(delta)
+  }
+
+  // call this if we detect any movement to adjust the character mesh accordingly
+  // this should also be called if any movement key was just released so we can
+  // properly send that update to the server (that the local player is not moving)
+  moveFromCurrentInput(delta: number) {
     if (this.sendServerUpdates) {
       // LOCAL PLAYER UPDATES
       if (!this.pressed) {
@@ -119,58 +141,47 @@ export class Player {
         return
       }
 
-      // if (
-      //   Object.values(this.pressed).every((val) => val === false) &&
-      //   Object.values(this.justReleased!).some((val) => val === true)
-      // ) {
-      //   console.log(
-      //     "no value is currently pressed but we're sending an event because some key was just released ^_^"
-      //   )
-      // }
-
       let xv = 0
       let yv = 0
       let updatedPosition = false
       if (this.pressed.left) {
         updatedPosition = true
-        this.mesh.position.x -= delta
+        this.object3d.position.x -= delta
         xv -= 1
       }
       if (this.pressed.right) {
         updatedPosition = true
-        this.mesh.position.x += delta
+        this.object3d.position.x += delta
         xv += 1
       }
       if (this.pressed.up) {
         updatedPosition = true
-        this.mesh.position.y += delta
+        this.object3d.position.y += delta
         yv += 1
       }
       if (this.pressed.down) {
         updatedPosition = true
-        this.mesh.position.y -= delta
+        this.object3d.position.y -= delta
         yv -= 1
       }
 
       this.eventHelper?.setLocalPlayerPosition(
         this.entityId,
-        this.mesh.position.x,
-        this.mesh.position.y,
-        this.mesh.position.z
+        this.object3d.position.x,
+        this.object3d.position.y,
+        this.object3d.position.z
       )
-      this.cameraHelper?.moveTo(this.mesh.position.x, this.mesh.position.y)
+      this.cameraHelper?.moveTo(
+        this.object3d.position.x,
+        this.object3d.position.y
+      )
 
       this.eventHelper?.setLocalPlayerVelocity(xv, yv, 0)
     } else {
       // REMOTE PLAYER UPDATES
-      this.mesh.position.x += delta * this.remoteXv
-      this.mesh.position.y += delta * this.remoteYv
-      this.mesh.position.z += delta * this.remoteZv
+      this.object3d.position.x += delta * this.remoteXv
+      this.object3d.position.y += delta * this.remoteYv
+      this.object3d.position.z += delta * this.remoteZv
     }
   }
-
-  // call this if we detect any movement to adjust the character mesh accordingly
-  // this should also be called if any movement key was just released so we can
-  // properly send that update to the server (that the local player is not moving)
-  moveFromCurrentInput() {}
 }
