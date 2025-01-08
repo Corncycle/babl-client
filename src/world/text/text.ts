@@ -7,6 +7,7 @@ import { Player } from '../player.js'
 export class TextHelper {
   renderer: CSS2DRenderer
 
+  playerEntityIdToNameLabel: Map<number, CSS2DObject>
   playerEntityIdToMessageLabel: Map<number, CSS2DObject>
   playerEntityIdToTimeout: Map<number, NodeJS.Timeout>
 
@@ -17,6 +18,7 @@ export class TextHelper {
     renderer.domElement.classList.add('game-text-canvas')
     container.appendChild(renderer.domElement)
 
+    this.playerEntityIdToNameLabel = new Map()
     this.playerEntityIdToMessageLabel = new Map()
     this.playerEntityIdToTimeout = new Map()
   }
@@ -40,13 +42,13 @@ export class TextHelper {
 
     player.object3d.add(playerMessageLabel)
 
+    this.playerEntityIdToNameLabel.set(player.entityId, playerNameLabel)
     this.playerEntityIdToMessageLabel.set(player.entityId, playerMessageLabel)
   }
 
   postMessage(playerId: number, msg: string) {
     const label = this.playerEntityIdToMessageLabel.get(playerId)
     if (!label) {
-      console.log('fialure')
       return
     }
     label.visible = true
@@ -56,5 +58,16 @@ export class TextHelper {
       label.visible = false
     }, 5000)
     this.playerEntityIdToTimeout.set(playerId, timeout)
+  }
+
+  removePlayerLabels(player: Player) {
+    const nameLabel = this.playerEntityIdToNameLabel.get(player.entityId)
+    if (nameLabel) {
+      player.object3d.remove(nameLabel)
+    }
+    const messageLabel = this.playerEntityIdToMessageLabel.get(player.entityId)
+    if (messageLabel) {
+      player.object3d.remove(messageLabel)
+    }
   }
 }

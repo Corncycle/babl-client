@@ -1,10 +1,3 @@
-export interface BooleanDirection {
-  up: boolean
-  down: boolean
-  left: boolean
-  right: boolean
-}
-
 export const inputMappings: { [keyName: string]: string } = {
   w: 'up',
   a: 'left',
@@ -13,6 +6,7 @@ export const inputMappings: { [keyName: string]: string } = {
   Enter: 'enter',
 }
 
+// MAKE SURE TO SET tab-index="0" ON THE CONTAINER DIV TO PROPERLY CAPTURE KEY INPUT
 export class InputHelper {
   pressed: { [pressedValue: string]: boolean }
 
@@ -71,6 +65,7 @@ export class InputHelper {
     }
   }
 
+  // place a call to this at the end of the game loop
   clearJustPressedAndReleased() {
     this.clearJustPressed()
     this.clearJustReleased()

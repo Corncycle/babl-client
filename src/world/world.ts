@@ -1,5 +1,9 @@
 import * as THREE from 'three'
-import { cubeFactory } from '../canvas/util.js'
+import {
+  cubeFactory,
+  solidCubeFactory,
+  solidExtrudedShapeFactory,
+} from '../canvas/util.js'
 import { CameraHelper } from './camera.js'
 import { Player } from './player.js'
 import { Socket } from 'socket.io-client'
@@ -19,6 +23,8 @@ export class World {
   inputHelper: InputHelper
   playerEntityIdToPlayerMap: Map<number, Player>
 
+  initialLoad: boolean
+
   constructor(
     container: HTMLDivElement,
     renderer: THREE.WebGLRenderer,
@@ -33,9 +39,9 @@ export class World {
 
     this.chatInputBox = document.querySelector('.chat-input')!
 
-    for (let i = -2; i <= 2; i++) {
-      this.scene.add(cubeFactory(1, i, 0, -0.5))
-    }
+    // for (let i = -2; i <= 2; i++) {
+    //   this.scene.add(cubeFactory(1, i, 0, -0.5))
+    // }
 
     this.cameraHelper = new CameraHelper(container, 5, 10, 30)
     this.renderer = renderer
@@ -122,8 +128,33 @@ export class World {
         return
       }
       this.playerEntityIdToPlayerMap.delete(id)
+      this.textHelper.removePlayerLabels(despawnedPlayer)
       this.scene.remove(despawnedPlayer.object3d) // TODO: make sure this cleanup is sufficient (this involves meshes)
     })
+
+    socket.on('mapData', (mapData: any) => {
+      if (this.initialLoad) {
+        location.reload()
+      }
+      for (const c of mapData.objects) {
+        switch (c.type) {
+          case 1:
+            const pts = []
+            for (let i = 0; i < c.points.length; i += 2) {
+              pts.push(new THREE.Vector2(c.points[i], c.points[i + 1]))
+            }
+            const shape = new THREE.Shape(pts)
+            this.scene.add(solidExtrudedShapeFactory(shape))
+            break
+          case 11:
+            this.scene.add(solidCubeFactory(1, c.x, c.y, 0))
+            break
+        }
+      }
+      this.initialLoad = true
+    })
+
+    this.initialLoad = false
   }
 
   postPlayerMessage(playerId: number, msg: string) {

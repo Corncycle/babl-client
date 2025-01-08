@@ -7,7 +7,7 @@ export const connectCanvas = (socket: Socket) => {
   const container: HTMLDivElement = document.querySelector(
     '.game-canvas-container'
   )!
-  const renderer = new THREE.WebGLRenderer()
+  const renderer = new THREE.WebGLRenderer({ logarithmicDepthBuffer: true })
   renderer.setSize(container.offsetWidth, container.offsetHeight)
   renderer.outputColorSpace = THREE.SRGBColorSpace
   container.appendChild(renderer.domElement)
