@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import { rapier } from '../world/rapier.js'
+import { ColliderDesc, World } from '@dimforge/rapier3d-compat'
 
 export const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
 export const cubeEdgesGeometry = new THREE.EdgesGeometry(cubeGeometry)
@@ -34,9 +36,26 @@ export const solidCubeFactory = (
   return mesh
 }
 
-export const solidExtrudedShapeFactory = (shape: THREE.Shape) => {
-  const geo = new THREE.ExtrudeGeometry(shape, { bevelEnabled: false })
+export const solidExtrudedShapeFactory = (world: World, shape: THREE.Shape) => {
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    bevelEnabled: false,
+    depth: 2,
+  })
+  const verts = geo.attributes.position.array as Float32Array
+  console.log('verts of geo')
+  console.log(verts)
+
+  const ind = geo.index
+  const myInd = new Uint32Array(
+    [...Array(verts.length / 3).keys()].map((i) => i)
+  )
+
+  console.log(myInd)
+
+  const myColliderDesc = rapier.ColliderDesc.trimesh(verts, myInd)
+  world.createCollider(myColliderDesc)
+
   const mesh = new THREE.Mesh(geo, normalMaterial)
-  mesh.position.z = -0.5
+  // mesh.position.z = -0.5
   return mesh
 }

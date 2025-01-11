@@ -8,6 +8,8 @@ import { InputHelper } from './input.js'
 import EventHelper from './eventHelper.js'
 import { CameraHelper } from './camera.js'
 import { TextHelper } from './text/text.js'
+import RAPIER from '@dimforge/rapier3d-compat'
+import { rapier } from './rapier.js'
 // import { createTextMaterial } from './util.js'
 // import { fontGeo } from './util.js'
 
@@ -22,13 +24,16 @@ export interface PlayerUpdate {
 }
 
 export class Player {
-  static geometry = new THREE.TetrahedronGeometry()
+  // static geometry = new THREE.TetrahedronGeometry()
+  static geometry = new THREE.SphereGeometry(0.5, 16, 8)
   static material = new THREE.MeshNormalMaterial()
 
   entityId: number
 
   object3d: THREE.Object3D
   mesh: THREE.Mesh
+
+  rigidBody?: RAPIER.RigidBody
 
   sendServerUpdates: boolean
   socket?: Socket
@@ -54,7 +59,8 @@ export class Player {
     inputHelper?: InputHelper,
     eventHelper?: EventHelper,
     cameraHelper?: CameraHelper,
-    textHelper?: TextHelper
+    textHelper?: TextHelper,
+    world?: RAPIER.World
   ) {
     this.entityId = entityId
     this.sendServerUpdates = options.sendServerUpdates ?? false
@@ -110,6 +116,12 @@ export class Player {
         this.object3d.position.x,
         this.object3d.position.y
       )
+
+      if (world) {
+        const colliderDesc = new RAPIER.ColliderDesc(new RAPIER.Ball(0.5))
+        this.rigidBody = world.createRigidBody(rapier.RigidBodyDesc.dynamic())
+        world.createCollider(colliderDesc, this.rigidBody)
+      }
     }
 
     this.remoteXv = 0
@@ -121,6 +133,24 @@ export class Player {
 
   process(delta: number) {
     this.moveFromCurrentInput(delta)
+    if (this.rigidBody) {
+      const t = this.rigidBody.translation()
+      this.object3d.position.set(t.x, t.y, t.z)
+      this.cameraHelper?.moveTo(
+        this.object3d.position.x,
+        this.object3d.position.y
+      )
+    }
+  }
+
+  // often we want to override the x or y velocity of our rigidbody
+  // but retain the z velocity. use this method to do so
+  setPlanarLinvel(xv: number, yv: number) {
+    if (!this.rigidBody) {
+      return
+    }
+    const l = this.rigidBody.linvel()
+    this.rigidBody.setLinvel({ x: xv, y: yv, z: l.z }, true)
   }
 
   // call this if we detect any movement to adjust the character mesh accordingly
@@ -138,6 +168,9 @@ export class Player {
         Object.values(this.pressed).every((val) => val === false) &&
         Object.values(this.justReleased!).every((val) => val === false)
       ) {
+        if (this.rigidBody) {
+          this.setPlanarLinvel(0, 0)
+        }
         return
       }
 
@@ -163,6 +196,10 @@ export class Player {
         updatedPosition = true
         this.object3d.position.y -= delta
         yv -= 1
+      }
+
+      if (this.rigidBody) {
+        this.setPlanarLinvel(xv, yv)
       }
 
       this.eventHelper?.setLocalPlayerPosition(

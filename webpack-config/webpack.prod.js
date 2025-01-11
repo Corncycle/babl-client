@@ -13,7 +13,15 @@ module.exports = merge(common, {
   },
   externals: {
     three: 'module three',
-    //   'explorer-debugger': './debug/ProdDebugger.ts',
+    '@dimforge/rapier3d': 'module @dimforge/rapier3d',
+  },
+  module: {
+    rules: [
+      {
+        test: /dimforge\/rapier3d/,
+        sideEffects: true,
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({

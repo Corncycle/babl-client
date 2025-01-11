@@ -10,9 +10,14 @@ import { Socket } from 'socket.io-client'
 import EventHelper from './eventHelper.js'
 import { InputHelper } from './input.js'
 import { TextHelper } from './text/text.js'
+// import RAPIER from '@dimforge/rapier3d'
+import { handleMapLoad } from './map.js'
+import { rapier } from './rapier.js'
+import RAPIER from '@dimforge/rapier3d-compat'
 
-export class World {
+export class Space {
   scene: THREE.Scene
+  world: RAPIER.World
   cameraHelper: CameraHelper
   renderer: THREE.WebGLRenderer
   player?: Player
@@ -32,6 +37,9 @@ export class World {
     textHelper: TextHelper
   ) {
     this.scene = new THREE.Scene()
+    this.world = new rapier.World({ x: 0, y: 0, z: -9.8 })
+
+    // this.phys = new RAPIER.World({ x: 0.0, y: -9.81, z: 0.0 })
     this.textHelper = textHelper
     this.inputHelper = new InputHelper(container)
     this.eventHelper = new EventHelper(socket, 20)
@@ -59,7 +67,8 @@ export class World {
         this.inputHelper,
         this.eventHelper,
         this.cameraHelper,
-        this.textHelper
+        this.textHelper,
+        this.world
       )
       this.scene.add(this.player.object3d)
       this.playerEntityIdToPlayerMap.set(e.entityId, this.player)
@@ -133,25 +142,7 @@ export class World {
     })
 
     socket.on('mapData', (mapData: any) => {
-      if (this.initialLoad) {
-        location.reload()
-      }
-      for (const c of mapData.objects) {
-        switch (c.type) {
-          case 1:
-            const pts = []
-            for (let i = 0; i < c.points.length; i += 2) {
-              pts.push(new THREE.Vector2(c.points[i], c.points[i + 1]))
-            }
-            const shape = new THREE.Shape(pts)
-            this.scene.add(solidExtrudedShapeFactory(shape))
-            break
-          case 11:
-            this.scene.add(solidCubeFactory(1, c.x, c.y, 0))
-            break
-        }
-      }
-      this.initialLoad = true
+      handleMapLoad(this, mapData)
     })
 
     this.initialLoad = false
@@ -162,6 +153,9 @@ export class World {
   }
 
   process(delta: number) {
+    this.world.timestep = delta
+    this.world.step()
+
     this.cameraHelper.process(delta)
     // this.player?.process(delta)
 

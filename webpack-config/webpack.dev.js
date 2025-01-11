@@ -16,6 +16,7 @@ module.exports = merge(common, {
   //   'explorer-debugger': './debug/DevDebugger.ts',
   // },
   devtool: 'inline-source-map',
+  experiments: { asyncWebAssembly: true },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.dev.html'),
