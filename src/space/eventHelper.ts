@@ -23,7 +23,10 @@ export default class EventHelper {
 
     setInterval(() => {
       if (this.playerUpdateEvent) {
-        socket.emit('playerUpdate', this.playerUpdateEvent)
+        socket.emit(
+          'playerUpdate',
+          this.truncateEventValues(this.playerUpdateEvent)
+        )
         this.playerUpdateEvent = undefined
       }
     }, 1000 / eventsPerSecond)
@@ -46,5 +49,14 @@ export default class EventHelper {
     this.playerUpdateEvent.xv = xv
     this.playerUpdateEvent.yv = yv
     this.playerUpdateEvent.zv = zv
+  }
+
+  truncateEventValues(e: PlayerUpdate) {
+    const outEvent = {} as any
+    let key: keyof PlayerUpdate
+    for (key in e) {
+      outEvent[key] = Math.trunc((e[key] as number) * 100) / 100
+    }
+    return outEvent
   }
 }

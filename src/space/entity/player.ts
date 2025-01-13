@@ -90,18 +90,30 @@ export class Player implements IEntity {
     this.moveFromCurrentInput(delta)
 
     if (this.isLocalPlayer) {
-      this.space!.eventHelper.setLocalPlayerVelocity(
-        this.entityId,
-        simulatedVelocity!.x,
-        simulatedVelocity!.y,
-        simulatedVelocity!.z
-      )
+      const postInputLinvel = this.rigidBody!.linvel()
+      if (postInputLinvel.x === 0 && postInputLinvel.y === 0) {
+        simulatedVelocity!.x = 0
+        simulatedVelocity!.y = 0
+      }
+
       const t = this.rigidBody!.translation()
       this.object3d.position.copy(t)
       this.space!.cameraHelper.moveTo(
         this.object3d.position.x,
         this.object3d.position.y
       )
+      this.space!.cameraHelper.moveTo(
+        this.object3d.position.x,
+        this.object3d.position.y
+      )
+
+      if (
+        Object.values(this.pressed!).some((val) => val === true) ||
+        Object.values(this.justReleased!).some((val) => val === true)
+      ) {
+        console.log(simulatedVelocity)
+        this.updateInputHelper(t, simulatedVelocity)
+      }
     }
   }
 
@@ -144,25 +156,38 @@ export class Player implements IEntity {
       }
 
       this.setPlanarLinvel(xv, yv)
-
-      // TODO: check whether this should be set AFTER stepping the physics
-      // simulation forward (the linvel is set but not used above yet)
-      this.space!.eventHelper.setLocalPlayerPosition(
-        this.entityId,
-        this.object3d.position.x,
-        this.object3d.position.y,
-        this.object3d.position.z
-      )
-      this.space!.eventHelper.setLocalPlayerVelocity(this.entityId, xv, yv, 0)
-      this.space!.cameraHelper.moveTo(
-        this.object3d.position.x,
-        this.object3d.position.y
-      )
     } else {
       // remote player updates
       this.object3d.position.x += delta * this.velocity.x
       this.object3d.position.y += delta * this.velocity.y
       this.object3d.position.z += delta * this.velocity.z
+    }
+  }
+
+  updateInputHelper(
+    pos?: { x: number; y: number; z: number },
+    vel?: { x: number; y: number; z: number }
+  ) {
+    if (!this.isLocalPlayer) {
+      return
+    }
+    // TODO: check whether this should be set AFTER stepping the physics
+    // simulation forward (the linvel is set but not used above yet)
+    if (pos) {
+      this.space!.eventHelper.setLocalPlayerPosition(
+        this.entityId,
+        pos.x,
+        pos.y,
+        pos.z
+      )
+    }
+    if (vel) {
+      this.space!.eventHelper.setLocalPlayerVelocity(
+        this.entityId,
+        vel.x,
+        vel.y,
+        0
+      )
     }
   }
 }
