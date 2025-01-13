@@ -1,13 +1,12 @@
 import { io } from 'socket.io-client'
 import { connectChat } from './chat/chat'
 import { connectCanvas } from './canvas/canvas'
-import { rapier } from './world/rapier.js'
+import { initializeRapier } from './space/rapier.js'
+;(async function initialize() {
+  await initializeRapier()
 
-const socket = io('http://localhost:9090')
+  const socket = io('http://localhost:9090')
 
-socket.on('message', (msg) => {
-  console.log(msg)
-})
-
-const space = connectCanvas(socket)
-connectChat(socket, space)
+  const space = connectCanvas(socket)
+  connectChat(socket, space)
+})()

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Socket } from 'socket.io-client'
-import { Space } from '../world/space.js'
-import { TextHelper } from '../world/text/text.js'
+import { Space } from '../space/space.js'
+import { TextHelper } from '../space/text/text.js'
 
 export const connectCanvas = (socket: Socket) => {
   const container: HTMLDivElement = document.querySelector(

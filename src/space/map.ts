@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Space } from './space.js'
 import { solidCubeFactory, solidExtrudedShapeFactory } from '../canvas/util.js'
-import { rapier } from './rapier.js'
+import RAPIER from '@dimforge/rapier3d-compat'
 
 export const handleMapLoad = (space: Space, mapData: any) => {
   if (space.initialLoad) {
@@ -23,7 +23,7 @@ export const handleMapLoad = (space: Space, mapData: any) => {
     }
   }
 
-  const groundColliderDesc = rapier.ColliderDesc.cuboid(10, 10, 1)
+  const groundColliderDesc = RAPIER.ColliderDesc.cuboid(10, 10, 0.5)
   groundColliderDesc.setTranslation(0, 0, -0.5)
   space.world.createCollider(groundColliderDesc)
 

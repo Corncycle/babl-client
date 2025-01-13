@@ -8,17 +8,11 @@ export class CameraHelper {
   defaultCameraZ: number
   defaultCameraYOffset: number
 
-  // container: div element containing canvas, for use in capturing input
   // horizontalFov: horizontal fov of camera. i personally prefer this for framing as opposed
-  //   to vertical fov, so this means we need to do some computation
+  //   to vertical fov, so this means we need to do some computation because three uses vertical fov
   // width: width in units of default view
   // topDownTilt: angle in degrees by which the camera should be tilted for better viewing of the world
-  constructor(
-    container: HTMLDivElement,
-    horizontalFov: number,
-    width: number,
-    topDownTilt: number = 0
-  ) {
+  constructor(horizontalFov: number, width: number, topDownTilt: number = 0) {
     const verticalFov = THREE.MathUtils.radToDeg(
       2 *
         Math.atan(
@@ -26,12 +20,9 @@ export class CameraHelper {
         )
     )
 
-    console.log(`vertical Fov : ${verticalFov}`)
-
     this.topDownTilt = topDownTilt
     this.defaultCameraDistance =
       width / (2 * Math.tan((horizontalFov * Math.PI) / 180 / 2))
-    console.log(`camHeight: ${this.defaultCameraDistance}`)
     this.defaultCameraZ =
       this.defaultCameraDistance *
       Math.cos(THREE.MathUtils.degToRad(topDownTilt))
@@ -54,11 +45,7 @@ export class CameraHelper {
     const min = new THREE.Vector2()
     const max = new THREE.Vector2()
     this.camera.getViewBounds(this.defaultCameraDistance, min, max)
-    console.log(min)
-    console.log(max)
   }
-
-  process(delta: number) {}
 
   // due to top-down tilt, the x, y coordinates of the camera itself don't align
   // with the center of the actual camera. when moving the camera, use this method

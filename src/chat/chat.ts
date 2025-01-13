@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io-client'
 import wordData from './le4raw.txt?raw'
-import { Space } from '../world/space.js'
+import { Space } from '../space/space.js'
 
 const canvasContainer: HTMLDivElement = document.querySelector(
   '.game-canvas-container'

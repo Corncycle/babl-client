@@ -2,7 +2,7 @@ import {
   CSS2DObject,
   CSS2DRenderer,
 } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
-import { Player } from '../player.js'
+import { Player } from '../entity/player.js'
 
 export class TextHelper {
   renderer: CSS2DRenderer
@@ -27,7 +27,7 @@ export class TextHelper {
     const playerNameDiv = document.createElement('div')
     playerNameDiv.classList.add(
       'user-name-tag',
-      player.sendServerUpdates ? 'user-local-name-tag' : 'user-remote-name-tag'
+      player.isLocalPlayer ? 'user-local-name-tag' : 'user-remote-name-tag'
     )
     playerNameDiv.textContent = `user ${player.entityId}`
     const playerNameLabel = new CSS2DObject(playerNameDiv)

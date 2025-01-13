@@ -12,7 +12,7 @@ export class InputHelper {
 
   // setting justPressed and justReleased values to `true` can be
   // done in the `keydown` and `keyup` event listeners. handling
-  // setting them to `false` is dependent on game tick rate, so
+  // resetting them to `false` is dependent on game tick rate, so
   // ensure that a call to `clearJustPressedAndReleased` always
   // exists in the ticking game loop
   justPressed: { [pressedValue: string]: boolean }
@@ -45,6 +45,7 @@ export class InputHelper {
 
     const clearInput = () => {
       for (const k in this.pressed) {
+        this.justPressed[k] = false
         this.pressed[k] = false
         this.justReleased[k] = true
       }

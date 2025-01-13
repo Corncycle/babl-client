@@ -1,10 +1,19 @@
 // a utility class to help with sending events back to the server
-// this class should be used for all events send to the server
+// this class should be used for all events sent to the server
 // so that events can be batched together instead of sending events
 // every frame
 
 import { Socket } from 'socket.io-client'
-import { PlayerUpdate } from './player.js'
+
+export interface PlayerUpdate {
+  entityId: number
+  x: number
+  y: number
+  z: number
+  xv?: number
+  yv?: number
+  zv?: number
+}
 
 export default class EventHelper {
   playerUpdateEvent?: PlayerUpdate
