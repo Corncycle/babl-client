@@ -94,7 +94,8 @@ export class Space {
         return
       }
       if (e.x !== undefined && e.y !== undefined && e.z !== undefined) {
-        remotePlayer.object3d.position.set(e.x, e.y, e.z)
+        remotePlayer.object3d.position.lerp(e, 0.5)
+        // remotePlayer.object3d.position.set(e.x, e.y, e.z)
       }
       remotePlayer.velocity.set(e.xv, e.yv, e.zv)
     })

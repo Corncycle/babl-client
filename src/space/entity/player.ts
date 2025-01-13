@@ -69,7 +69,7 @@ export class Player implements IEntity {
         RAPIER.RigidBodyDesc.dynamic().lockRotations()
       )
       this.rigidBody.setTranslation(
-        { ...this.rigidBody.translation(), z: 0.5 },
+        { x: position.x, y: position.y, z: 0.5 },
         true
       )
       this.space.world.createCollider(colliderDesc, this.rigidBody)
