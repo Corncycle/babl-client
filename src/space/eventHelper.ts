@@ -7,9 +7,9 @@ import { Socket } from 'socket.io-client'
 
 export interface PlayerUpdate {
   entityId: number
-  x: number
-  y: number
-  z: number
+  x?: number
+  y?: number
+  z?: number
   xv?: number
   yv?: number
   zv?: number
@@ -39,9 +39,9 @@ export default class EventHelper {
     }
   }
 
-  setLocalPlayerVelocity(xv: number, yv: number, zv: number) {
+  setLocalPlayerVelocity(entityId: number, xv: number, yv: number, zv: number) {
     if (!this.playerUpdateEvent) {
-      return
+      this.playerUpdateEvent = { entityId, xv, yv, zv }
     }
     this.playerUpdateEvent.xv = xv
     this.playerUpdateEvent.yv = yv

@@ -38,7 +38,7 @@ export class Space {
     this.renderer = renderer
 
     this.textHelper = textHelper
-    this.eventHelper = new EventHelper(socket, 2)
+    this.eventHelper = new EventHelper(socket, 20)
     this.inputHelper = new InputHelper(container)
     this.entityIdToEntityMap = new Map()
 
@@ -93,7 +93,10 @@ export class Space {
       if (!remotePlayer) {
         return
       }
-      remotePlayer.object3d.position.set(e.x, e.y, e.z)
+      if (e.x !== undefined && e.y !== undefined && e.z !== undefined) {
+        remotePlayer.object3d.position.set(e.x, e.y, e.z)
+      }
+      remotePlayer.velocity.set(e.xv, e.yv, e.zv)
     })
 
     socket.on('remotePlayerDespawn', (id) => {

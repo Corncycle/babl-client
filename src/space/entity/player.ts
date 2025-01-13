@@ -77,9 +77,25 @@ export class Player implements IEntity {
   }
 
   process(delta: number) {
+    // we run a step of the simulation immediately before calling player.process.
+    // thus, the simulated player's velocity from 1 frame before might be more
+    // accurate than the velocity that only depends on player input (it might take
+    // collisions into account), so we store it and use this as the velocity we send
+    // to other players
+    let simulatedVelocity
+    if (this.isLocalPlayer) {
+      simulatedVelocity = this.rigidBody!.linvel()
+    }
+
     this.moveFromCurrentInput(delta)
 
     if (this.isLocalPlayer) {
+      this.space!.eventHelper.setLocalPlayerVelocity(
+        this.entityId,
+        simulatedVelocity!.x,
+        simulatedVelocity!.y,
+        simulatedVelocity!.z
+      )
       const t = this.rigidBody!.translation()
       this.object3d.position.copy(t)
       this.space!.cameraHelper.moveTo(
@@ -137,7 +153,7 @@ export class Player implements IEntity {
         this.object3d.position.y,
         this.object3d.position.z
       )
-      this.space!.eventHelper.setLocalPlayerVelocity(xv, yv, 0)
+      this.space!.eventHelper.setLocalPlayerVelocity(this.entityId, xv, yv, 0)
       this.space!.cameraHelper.moveTo(
         this.object3d.position.x,
         this.object3d.position.y
