@@ -94,7 +94,11 @@ export class Space {
         return
       }
       if (e.x !== undefined && e.y !== undefined && e.z !== undefined) {
-        remotePlayer.object3d.position.lerp(e, 0.5)
+        // lerping smooths any jitters that emerge from discrete events
+        // lerp with 1.0 to respect server position exactly on the client side (jittery but responsive)
+        // lerp with 0.0 to only respect server velocity and don't snap to server position at all (smooth but inaccurate)
+        // lerp with a value in between to reconcile the two behaviors
+        remotePlayer.object3d.position.lerp(e, 0.3)
         // remotePlayer.object3d.position.set(e.x, e.y, e.z)
       }
       remotePlayer.velocity.set(e.xv, e.yv, e.zv)

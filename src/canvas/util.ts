@@ -35,11 +35,17 @@ export const solidCubeFactory = (
   return mesh
 }
 
-export const solidExtrudedShapeFactory = (world: World, shape: THREE.Shape) => {
+export const solidExtrudedShapeFactory = (
+  world: World,
+  shape: THREE.Shape,
+  min: number = 0,
+  max: number = 1
+) => {
   const geo = new THREE.ExtrudeGeometry(shape, {
     bevelEnabled: false,
-    depth: 2,
+    depth: max - min,
   })
+  geo.translate(0, 0, min)
   const verts = geo.attributes.position.array as Float32Array
   const myInd = new Uint32Array(
     [...Array(verts.length / 3).keys()].map((i) => i)
