@@ -16,7 +16,13 @@ export const handleMapLoad = (space: Space, mapData: any) => {
         }
         const shape = new THREE.Shape(pts)
         space.scene.add(
-          solidExtrudedShapeFactory(space.world, shape, c.min, c.max)
+          solidExtrudedShapeFactory(
+            space.world,
+            shape,
+            new THREE.Vector2(c.x, c.y),
+            c.min,
+            c.max
+          )
         )
         break
       case 11:

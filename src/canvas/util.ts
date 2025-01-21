@@ -38,6 +38,7 @@ export const solidCubeFactory = (
 export const solidExtrudedShapeFactory = (
   world: World,
   shape: THREE.Shape,
+  centroid: THREE.Vector2,
   min: number = 0,
   max: number = 1
 ) => {
@@ -52,8 +53,10 @@ export const solidExtrudedShapeFactory = (
   )
 
   const myColliderDesc = RAPIER.ColliderDesc.trimesh(verts, myInd)
+  myColliderDesc.setTranslation(centroid.x, centroid.y, 0)
   world.createCollider(myColliderDesc)
 
   const mesh = new THREE.Mesh(geo, normalMaterial)
+  mesh.position.set(centroid.x, centroid.y, mesh.position.z)
   return mesh
 }
