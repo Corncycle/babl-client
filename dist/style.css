@@ -12,6 +12,17 @@ body {
     background: beige;
 }
 
+.hidden {
+    display: none !important;
+}
+
+.loader-container {
+    margin-top: 40px;
+    width:  800px;
+    height: 600px;
+    border: 1px solid black;
+}
+
 .babl-container {
     border: 1px solid black;
     margin-top: 40px;
