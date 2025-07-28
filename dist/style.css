@@ -6,7 +6,18 @@ input {
     all: unset;
 }
 
+button {
+    /* reset default styles */
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    outline: inherit;
+}
+
 body {
+    position: relative;
     display: flex;
     justify-content: center;
     background: beige;
@@ -16,11 +27,22 @@ body {
     display: none !important;
 }
 
+.disabled {
+    opacity: 30%;
+    pointer-events: none;
+}
+
+.disabled-darken {
+    filter: brightness(90%);
+    pointer-events: none;
+}
+
 .loader-container {
-    margin-top: 40px;
-    width:  800px;
-    height: 600px;
+    width:  400px;
+    height: 200px;
     border: 1px solid black;
+
+    position: absolute;
 }
 
 .babl-container {
@@ -77,24 +99,29 @@ body {
     font-weight: bold;
 }
 
-.chat-input-container {
-    border-top: 1px solid black;
+.vetted-input-container {
     position: relative;
     height: calc(1.5rem + 2 * 0.4rem);
 }
 
+.chat-input-container {
+    border-top: 1px solid black;
+}
+
 /* shared styles for chat input and decorated chat display */
-.chat-input, .decorated-chat-display {
+.vetted-input, .decorated-display {
     font-family: monospace;
     font-size: 1.2rem;
-    position: absolute;
     inset: 0;
     padding: 0.4rem;
     text-decoration: none;
 }
 
-.chat-input {
+.vetted-input {
     -webkit-text-fill-color: transparent;
+    width: calc(100% - 0.8rem);
+
+    position: relative;
 }
 
 .chat-input-invalid {
@@ -109,7 +136,7 @@ body {
     white-space: pre;
 }
 
-.decorated-chat-display {
+.decorated-display {
     display: flex;
     align-items: center;
     pointer-events: none;
@@ -117,9 +144,11 @@ body {
 
     scrollbar-width: none;
     -ms-overflow-style: none;
+
+    position: absolute;
 }
 
-.decorated-chat-display::-webkit-scrollbar {
+.decorated-display::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
@@ -128,6 +157,52 @@ body {
     border: 1px solid black;
     width: 300px;
 }
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: beige;
+
+    border: 1px solid black;
+
+    width: 420px;
+    height: 160px;
+
+    padding: 10px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.login-input-container {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10px;
+}
+
+.login-input {
+    inset: 0;
+}
+
+.login-form {
+    position: relative;
+
+    display: block;
+    flex: 3;
+
+    border: 1px solid black;
+}
+
+.login-button {
+    flex: 1;
+
+    border: 1px solid black;
+}
+
 
 /* GAME LOGIC CSS FROM THIS POINT ON */
 .user-name-tag {

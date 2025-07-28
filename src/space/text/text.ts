@@ -7,9 +7,9 @@ import { Player } from '../entity/player.js'
 export class TextHelper {
   renderer: CSS2DRenderer
 
-  playerEntityIdToNameLabel: Map<number, CSS2DObject>
-  playerEntityIdToMessageLabel: Map<number, CSS2DObject>
-  playerEntityIdToTimeout: Map<number, NodeJS.Timeout>
+  playerNameToNameLabel: Map<string, CSS2DObject>
+  playerNameToMessageLabel: Map<string, CSS2DObject>
+  playerNameToTimeout: Map<string, NodeJS.Timeout>
 
   constructor(container: HTMLDivElement) {
     const renderer = new CSS2DRenderer()
@@ -18,9 +18,9 @@ export class TextHelper {
     renderer.domElement.classList.add('game-text-canvas')
     container.appendChild(renderer.domElement)
 
-    this.playerEntityIdToNameLabel = new Map()
-    this.playerEntityIdToMessageLabel = new Map()
-    this.playerEntityIdToTimeout = new Map()
+    this.playerNameToNameLabel = new Map()
+    this.playerNameToMessageLabel = new Map()
+    this.playerNameToTimeout = new Map()
   }
 
   initializePlayerLabels(player: Player) {
@@ -29,7 +29,7 @@ export class TextHelper {
       'user-name-tag',
       player.isLocalPlayer ? 'user-local-name-tag' : 'user-remote-name-tag'
     )
-    playerNameDiv.textContent = `user ${player.entityId}`
+    playerNameDiv.textContent = player.name
     const playerNameLabel = new CSS2DObject(playerNameDiv)
     playerNameLabel.position.set(0, -0.8, 0)
 
@@ -42,30 +42,30 @@ export class TextHelper {
 
     player.object3d.add(playerMessageLabel)
 
-    this.playerEntityIdToNameLabel.set(player.entityId, playerNameLabel)
-    this.playerEntityIdToMessageLabel.set(player.entityId, playerMessageLabel)
+    this.playerNameToNameLabel.set(player.name, playerNameLabel)
+    this.playerNameToMessageLabel.set(player.name, playerMessageLabel)
   }
 
-  postMessage(playerId: number, msg: string) {
-    const label = this.playerEntityIdToMessageLabel.get(playerId)
+  postMessage(name: string, msg: string) {
+    const label = this.playerNameToMessageLabel.get(name)
     if (!label) {
       return
     }
     label.visible = true
     label.element.textContent = msg
-    clearTimeout(this.playerEntityIdToTimeout.get(playerId))
+    clearTimeout(this.playerNameToTimeout.get(name))
     const timeout = setTimeout(() => {
       label.visible = false
     }, 5000)
-    this.playerEntityIdToTimeout.set(playerId, timeout)
+    this.playerNameToTimeout.set(name, timeout)
   }
 
   removePlayerLabels(player: Player) {
-    const nameLabel = this.playerEntityIdToNameLabel.get(player.entityId)
+    const nameLabel = this.playerNameToNameLabel.get(player.name)
     if (nameLabel) {
       player.object3d.remove(nameLabel)
     }
-    const messageLabel = this.playerEntityIdToMessageLabel.get(player.entityId)
+    const messageLabel = this.playerNameToMessageLabel.get(player.name)
     if (messageLabel) {
       player.object3d.remove(messageLabel)
     }

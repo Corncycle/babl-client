@@ -3,7 +3,6 @@ export const inputMappings: { [keyName: string]: string } = {
   a: 'left',
   s: 'down',
   d: 'right',
-  Enter: 'enter',
 }
 
 // MAKE SURE TO SET tab-index="0" ON THE CONTAINER DIV TO PROPERLY CAPTURE KEY INPUT

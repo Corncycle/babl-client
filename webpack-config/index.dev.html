@@ -9,21 +9,31 @@
     <link rel="icon" type="image/png" href="wrench.png">
 </head>
 <body>
-    <div class="loader-container">asdf</div>
-    <div class="babl-container hidden">
+    <div class="babl-container disabled">
         <div class="left-container">
             <div class="game-canvas-container" tabindex="0"></div>
-            <div class="chat-container">
+            <div class="chat-container" tabindex="1">
                 <div class="chat-messages-container"></div>
-                <div class="chat-input-container">
+                <div class="chat-input-container vetted-input-container">
                     <form class="chat-form">
-                        <input class="chat-input" spellcheck="false" />
-                        <div class="decorated-chat-display"></div>
+                        <input class="chat-input vetted-input" spellcheck="false" autocomplete="off" />
+                        <div class="decorated-chat-display decorated-display"></div>
                     </form>
                 </div>
             </div>
         </div>
         <div class="side-panel"></div>
+    </div>
+    <div class="login-container">
+        <span>pick a name</span>
+        <div class="login-input-container vetted-input-container">
+            <form class="login-form">
+                <input type="text" name="name" id="name" class="login-input vetted-input" spellcheck="false" autocomplete="off" />
+                <div class="decorated-login-display decorated-display"></div>
+            </form>
+            <button class="login-button">ok</button>
+        </div>
+        <span class="login-feedback"></span>
     </div>
 </body>
 </html>

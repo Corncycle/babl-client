@@ -13,11 +13,4 @@ const textures = {
 
 export const loadResources = async () => {
   const textureLoader = new THREE.TextureLoader()
-
-  await new Promise((res) => {
-    setTimeout(res, 3000)
-  })
-
-  loader.classList.add('hidden')
-  game.classList.remove('hidden')
 }

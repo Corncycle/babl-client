@@ -18,7 +18,7 @@ export class Space {
   textHelper: TextHelper
   eventHelper: EventHelper
   inputHelper: InputHelper
-  entityIdToEntityMap: Map<number, IEntity>
+  playerNameToEntityMap: Map<string, IEntity>
 
   chatInputBox: HTMLInputElement
 
@@ -40,7 +40,7 @@ export class Space {
     this.textHelper = textHelper
     this.eventHelper = new EventHelper(socket, 20)
     this.inputHelper = new InputHelper(container)
-    this.entityIdToEntityMap = new Map()
+    this.playerNameToEntityMap = new Map()
 
     this.chatInputBox = document.querySelector('.chat-input')!
 
@@ -52,14 +52,15 @@ export class Space {
       }
       this.localPlayer = new Player(
         { isLocal: true },
-        e.entityId,
+        e.name,
+        Math.random(), // TODO: see if we need to actually give a proper entityId
         new THREE.Vector3(e.x, e.y, e.z),
         textHelper,
         socket,
         this
       )
       this.scene.add(this.localPlayer.object3d)
-      this.entityIdToEntityMap.set(e.entityId, this.localPlayer)
+      this.playerNameToEntityMap.set(e.name, this.localPlayer)
     })
 
     // for loading in pre-existing players as the local player loads in
@@ -67,12 +68,13 @@ export class Space {
       playersData.forEach((e: any) => {
         const remotePlayer = new Player(
           { isLocal: false },
-          e.entityId,
+          e.name,
+          Math.random(), // TODO: see if we need to actually give a proper entityId
           new THREE.Vector3(e.x, e.y, e.z),
           textHelper
         )
         this.scene.add(remotePlayer.object3d)
-        this.entityIdToEntityMap.set(e.entityId, remotePlayer)
+        this.playerNameToEntityMap.set(e.name, remotePlayer)
       })
     })
 
@@ -80,16 +82,17 @@ export class Space {
     socket.on('remotePlayerSpawn', (e) => {
       const remotePlayer = new Player(
         { isLocal: false },
-        e.entityId,
+        e.name,
+        Math.random(), // TODO: see if we need to actually give a proper entityId
         new THREE.Vector3(e.x, e.y, e.z),
         textHelper
       )
       this.scene.add(remotePlayer.object3d)
-      this.entityIdToEntityMap.set(e.entityId, remotePlayer)
+      this.playerNameToEntityMap.set(e.name, remotePlayer)
     })
 
     socket.on('playerUpdate', (e) => {
-      const remotePlayer = this.entityIdToEntityMap.get(e.entityId) as Player
+      const remotePlayer = this.playerNameToEntityMap.get(e.name) as Player
       if (!remotePlayer) {
         return
       }
@@ -104,12 +107,12 @@ export class Space {
       remotePlayer.velocity.set(e.xv, e.yv, e.zv)
     })
 
-    socket.on('remotePlayerDespawn', (id) => {
-      const despawnedPlayer = this.entityIdToEntityMap.get(id) as Player
+    socket.on('remotePlayerDespawn', (name) => {
+      const despawnedPlayer = this.playerNameToEntityMap.get(name) as Player
       if (!despawnedPlayer) {
         return
       }
-      this.entityIdToEntityMap.delete(id)
+      this.playerNameToEntityMap.delete(name)
       this.textHelper.removePlayerLabels(despawnedPlayer)
       this.scene.remove(despawnedPlayer.object3d) // TODO: look more closely into whether this cleanup is sufficient (this involves meshes)
     })
@@ -119,20 +122,16 @@ export class Space {
     })
   }
 
-  postPlayerMessage(playerId: number, msg: string) {
-    this.textHelper.postMessage(playerId, msg)
+  postPlayerMessage(name: string, msg: string) {
+    this.textHelper.postMessage(name, msg)
   }
 
   process(delta: number) {
     this.world.timestep = delta
     this.world.step()
 
-    for (const entity of this.entityIdToEntityMap.values()) {
+    for (const entity of this.playerNameToEntityMap.values()) {
       entity.process(delta)
-    }
-
-    if (this.inputHelper.justPressed.enter) {
-      this.chatInputBox.focus()
     }
   }
 

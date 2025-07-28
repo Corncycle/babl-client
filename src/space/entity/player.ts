@@ -10,6 +10,7 @@ export class Player implements IEntity {
   static geometry = new THREE.SphereGeometry(0.5, 16, 8)
   static material = new THREE.MeshNormalMaterial()
 
+  name: string
   entityId: number
 
   object3d: THREE.Object3D
@@ -31,12 +32,14 @@ export class Player implements IEntity {
 
   constructor(
     options: SyncedObjectOptions,
+    name: string,
     entityId: number,
     position: THREE.Vector3,
     textHelper: TextHelper,
     socket?: Socket,
     space?: Space
   ) {
+    this.name = name
     this.entityId = entityId
     this.object3d = new THREE.Object3D()
     this.mesh = new THREE.Mesh(Player.geometry, Player.material)

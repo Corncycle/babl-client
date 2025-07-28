@@ -5,31 +5,45 @@ import { Space } from '../space/space.js'
 const canvasContainer: HTMLDivElement = document.querySelector(
   '.game-canvas-container'
 )!
-const chatContainer = document.querySelector('.chat-container')!
+const chatContainer: HTMLDivElement = document.querySelector('.chat-container')!
 const messagesContainerElm = document.querySelector('.chat-messages-container')!
-const inputElm: HTMLInputElement = document.querySelector('.chat-input')!
-const decoratedElm: HTMLDivElement = document.querySelector(
+const chatInputElm: HTMLInputElement = document.querySelector('.chat-input')!
+const chatDecoratedElm: HTMLDivElement = document.querySelector(
   '.decorated-chat-display'
 )!
-const formElm: HTMLFormElement = document.querySelector('.chat-form')!
+const chatFormElm: HTMLFormElement = document.querySelector('.chat-form')!
 
+const loginInputElm: HTMLInputElement = document.querySelector('.login-input')!
+const loginDecoratedElm: HTMLDivElement = document.querySelector(
+  '.decorated-login-display'
+)!
+
+const inputElementsToRegister: {
+  inputElm: HTMLInputElement
+  decoratedElm: HTMLDivElement
+  maxInputLength?: number
+}[] = [
+  { inputElm: chatInputElm, decoratedElm: chatDecoratedElm },
+  {
+    inputElm: loginInputElm,
+    decoratedElm: loginDecoratedElm,
+    maxInputLength: 12,
+  },
+]
+
+// connects chatbox logic to game logic. everything else is generic and will be hooked up
+// just by adding the relevant html elements to the array above ^^^
 export const connectChat = (socket: Socket, space: Space) => {
-  inputElm.addEventListener('beforeinput', beforeTextInput)
-  inputElm.addEventListener('input', onTextInput)
-  inputElm.addEventListener('scroll', () => {
-    syncScrollState()
-  })
-
-  formElm.addEventListener('submit', (e) => {
+  chatFormElm.addEventListener('submit', (e) => {
     e.preventDefault()
-    socket.emit('chat', inputElm.value)
-    inputElm.value = ''
-    decoratedElm.innerHTML = ''
+    socket.emit('chat', chatInputElm.value)
+    chatInputElm.value = ''
+    chatDecoratedElm.innerHTML = ''
     canvasContainer.focus()
   })
 
   socket.on('chat', (e) => {
-    space.postPlayerMessage(e.unit, e.msg)
+    space.postPlayerMessage(e.name, e.msg)
   })
 
   socket.on('localMessage', (e) => {
@@ -39,34 +53,50 @@ export const connectChat = (socket: Socket, space: Space) => {
   })
 }
 
-const beforeTextInput = (e: InputEvent) => {
-  if (e.data && e.data.length > 1) {
-    e.preventDefault()
-    return
-  }
-  if (e.data && !/[a-zA-z ]/.test(e.data)) {
-    e.preventDefault()
-    return
-  }
-  if (e.data && inputElm.value.length >= 48) {
-    e.preventDefault()
-    return
+const beforeTextInput = (
+  inputElm: HTMLInputElement,
+  maxInputLength: number = 48
+) => {
+  return (e: InputEvent) => {
+    if (e.data && e.data.length > 1) {
+      e.preventDefault()
+      return
+    }
+    if (e.data && !/[a-zA-z ]/.test(e.data)) {
+      e.preventDefault()
+      return
+    }
+    if (e.data && inputElm.value.length >= maxInputLength) {
+      e.preventDefault()
+      return
+    }
   }
 }
 
 // we don't need to vet the event here because all input vetting should be done
 // in `beforeTextInput`. this event just keeps the decorated elm in sync with
 // the actual input elm
-const onTextInput = (e?: Event) => {
-  syncScrollState()
-  decoratedElm.replaceChildren(...decorateText(inputElm.value))
+const onTextInput = (
+  inputElm: HTMLInputElement,
+  decoratedElm: HTMLDivElement,
+  syncScrollState: () => void
+) => {
+  return (e?: Event) => {
+    syncScrollState()
+    decoratedElm.replaceChildren(...decorateText(inputElm.value))
+  }
 }
 
 // sync the scroll state between the input elm and the display elm.
 // this should be done on text input (because overflow could scroll) and
 // on manually scrolling the input element itself
-const syncScrollState = () => {
-  decoratedElm.scrollLeft = inputElm.scrollLeft
+const syncScrollState = (
+  inputElm: HTMLInputElement,
+  decoratedElm: HTMLDivElement
+) => {
+  return () => {
+    decoratedElm.scrollLeft = inputElm.scrollLeft
+  }
 }
 
 const decorateText = (text: string) => {
@@ -108,4 +138,31 @@ const pushMessage = (msgText: string, unitName?: string) => {
 
 export const wordSet = new Set(wordData.split(/\r?\n/))
 
-onTextInput()
+chatContainer.addEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Enter' && !(chatInputElm === document.activeElement)) {
+    chatInputElm.focus()
+    chatInputElm.setSelectionRange(-1, -1)
+    e.preventDefault()
+  }
+})
+canvasContainer.addEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Enter' && !(chatInputElm === document.activeElement)) {
+    chatInputElm.focus()
+    chatInputElm.setSelectionRange(-1, -1)
+    e.preventDefault()
+  }
+})
+
+for (const pair of inputElementsToRegister) {
+  const syncState = syncScrollState(pair.inputElm, pair.decoratedElm)
+  const onInput = onTextInput(pair.inputElm, pair.decoratedElm, syncState)
+
+  pair.inputElm.addEventListener(
+    'beforeinput',
+    beforeTextInput(pair.inputElm, pair.maxInputLength)
+  )
+  pair.inputElm.addEventListener('input', onInput)
+  pair.inputElm.addEventListener('scroll', syncState)
+
+  onInput()
+}
