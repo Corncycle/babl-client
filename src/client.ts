@@ -5,13 +5,17 @@ import { initializeRapier } from './space/rapier.js'
 import { loadResources } from './loader.js'
 import { setupLogin } from './login/login.js'
 
-const loginContainer = document.querySelector('.login-container')!
+// defined in webpack configs, depending on environment
+declare const ENV_SERVER_ADDRESS: string
+
+const loginContainer: HTMLDivElement =
+  document.querySelector('.login-container')!
 const game = document.querySelector('.babl-container')!
 const loginFeedback: HTMLSpanElement =
   document.querySelector('.login-feedback')!
 
 ;(async function initialize() {
-  const socket = io('http://localhost:9090')
+  const socket = io(ENV_SERVER_ADDRESS, { reconnectionAttempts: 3 })
 
   socket.on('connect_error', (err) => {
     console.log('failed to connect to socket server')
@@ -20,6 +24,11 @@ const loginFeedback: HTMLSpanElement =
     loginFeedback.innerText =
       'err: not able to find the land of babl. try to load the page once more'
 
+    game.classList.add('disabled')
+
+    loginContainer.focus()
+
+    loginContainer.classList.remove('hidden')
     loginContainer.classList.add('disabled-darken')
   })
 
