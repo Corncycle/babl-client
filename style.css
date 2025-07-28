@@ -1,0 +1,226 @@
+* {
+    box-sizing: border-box;
+}
+
+input {
+    all: unset;
+}
+
+button {
+    /* reset default styles */
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    outline: inherit;
+}
+
+body {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    background: beige;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    opacity: 30%;
+    pointer-events: none;
+}
+
+.disabled-darken {
+    filter: brightness(90%);
+    pointer-events: none;
+}
+
+.loader-container {
+    width:  400px;
+    height: 200px;
+    border: 1px solid black;
+
+    position: absolute;
+}
+
+.babl-container {
+    border: 1px solid black;
+    margin-top: 40px;
+    display: flex;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-canvas-container {
+    border: 1px solid black;
+    border-right: none;
+    border-bottom: none;
+    width: 600px;
+    height: 450px;
+    position: relative;
+
+    /* necessary because we give this element a tabindex for input capturing */
+    outline: none !important;
+}
+
+.game-text-canvas {
+    position: absolute;
+    top: 0;
+}
+
+.chat-container {
+    border: 1px solid black;
+    border-right: none;
+    height: 200px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages-container {
+    font-family: monospace;
+    font-size: 1.2rem;
+
+    width: 600px;
+    line-height: 1.2em;
+    padding: 0.4rem;
+    gap: 10px;
+    flex-grow: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.chat-message-unit {
+    font-weight: bold;
+}
+
+.vetted-input-container {
+    position: relative;
+    height: calc(1.5rem + 2 * 0.4rem);
+}
+
+.chat-input-container {
+    border-top: 1px solid black;
+}
+
+/* shared styles for chat input and decorated chat display */
+.vetted-input, .decorated-display {
+    font-family: monospace;
+    font-size: 1.2rem;
+    inset: 0;
+    padding: 0.4rem;
+    text-decoration: none;
+}
+
+.vetted-input {
+    -webkit-text-fill-color: transparent;
+    width: calc(100% - 0.8rem);
+
+    position: relative;
+}
+
+.chat-input-invalid {
+    color: red;
+}
+
+.chat-input-invalid-long {
+    color: firebrick;
+}
+
+.chat-input-space {
+    white-space: pre;
+}
+
+.decorated-display {
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    overflow-x: scroll;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    position: absolute;
+}
+
+.decorated-display::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.side-panel {
+    border: 1px solid black;
+    width: 300px;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: beige;
+
+    border: 1px solid black;
+
+    width: 420px;
+    height: 160px;
+
+    padding: 10px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.login-input-container {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10px;
+}
+
+.login-input {
+    inset: 0;
+}
+
+.login-form {
+    position: relative;
+
+    display: block;
+    flex: 3;
+
+    border: 1px solid black;
+}
+
+.login-button {
+    flex: 1;
+
+    border: 1px solid black;
+}
+
+
+/* GAME LOGIC CSS FROM THIS POINT ON */
+.user-name-tag {
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.user-local-name-tag {
+    color: gold;
+    font-weight: bold;
+}
+
+.user-remote-name-tag {
+    color: white;
+}
+
+.user-message {
+    font-size: 16px;
+    font-family: monospace;
+    color: white;
+}
