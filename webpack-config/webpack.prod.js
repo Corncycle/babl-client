@@ -30,7 +30,7 @@ module.exports = merge(common, {
       scriptLoading: 'module',
     }),
     new DefinePlugin({
-      ENV_SERVER_ADDRESS: JSON.stringify('https://server.bablgame.com:9090'),
+      ENV_SERVER_ADDRESS: JSON.stringify('https://server.bablgame.com'),
     }),
   ],
 })
