@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import RAPIER, { World } from '@dimforge/rapier3d-compat'
+import { materials } from '../textureLoader.js'
 
 export const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
 export const cubeEdgesGeometry = new THREE.EdgesGeometry(cubeGeometry)
@@ -56,7 +57,11 @@ export const solidExtrudedShapeFactory = (
   myColliderDesc.setTranslation(centroid.x, centroid.y, 0)
   world.createCollider(myColliderDesc)
 
-  const mesh = new THREE.Mesh(geo, normalMaterial)
+  const mesh = new THREE.Mesh(geo, [materials.mcGrass, materials.mcDirt])
   mesh.position.set(centroid.x, centroid.y, mesh.position.z)
+
+  mesh.castShadow = true
+  mesh.receiveShadow = true
+
   return mesh
 }

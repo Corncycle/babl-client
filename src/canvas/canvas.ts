@@ -10,6 +10,11 @@ export const connectCanvas = (socket: Socket) => {
   const renderer = new THREE.WebGLRenderer({ logarithmicDepthBuffer: true })
   renderer.setSize(container.offsetWidth, container.offsetHeight)
   renderer.outputColorSpace = THREE.SRGBColorSpace
+
+  // TODO: tighten up shadows, until then disable them
+  // renderer.shadowMap.enabled = true
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
   container.appendChild(renderer.domElement)
 
   const textHelper = new TextHelper(container)

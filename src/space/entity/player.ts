@@ -5,10 +5,10 @@ import { Socket } from 'socket.io-client'
 import { Space } from '../space.js'
 import { SyncedObjectOptions } from './syncedEntity.js'
 import { TextHelper } from '../text/text.js'
+import { materials } from '../../textureLoader.js'
 
 export class Player implements IEntity {
   static geometry = new THREE.SphereGeometry(0.5, 16, 8)
-  static material = new THREE.MeshNormalMaterial()
 
   name: string
   entityId: number
@@ -42,7 +42,11 @@ export class Player implements IEntity {
     this.name = name
     this.entityId = entityId
     this.object3d = new THREE.Object3D()
-    this.mesh = new THREE.Mesh(Player.geometry, Player.material)
+    this.mesh = new THREE.Mesh(Player.geometry, materials.mcSteve)
+
+    this.mesh.receiveShadow = true
+    this.mesh.castShadow = true
+
     this.object3d.add(this.mesh)
     this.object3d.position.copy(position)
 

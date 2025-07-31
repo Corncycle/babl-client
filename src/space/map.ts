@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Space } from './space.js'
 import { solidCubeFactory, solidExtrudedShapeFactory } from '../canvas/util.js'
 import RAPIER from '@dimforge/rapier3d-compat'
+import { materials, textures } from '../textureLoader.js'
 
 export const handleMapLoad = (space: Space, mapData: any) => {
   if (space.initialLoad) {
@@ -34,6 +35,16 @@ export const handleMapLoad = (space: Space, mapData: any) => {
   const groundColliderDesc = RAPIER.ColliderDesc.cuboid(10, 10, 0.5)
   groundColliderDesc.setTranslation(0, 0, -0.5)
   space.world.createCollider(groundColliderDesc)
+
+  const groundGeometry = new THREE.PlaneGeometry(1, 1)
+  const cloneTex = textures.mcGrass.clone()
+  cloneTex.repeat.set(20, 20)
+  const stretchedMat = new THREE.MeshLambertMaterial({ map: cloneTex })
+
+  groundGeometry.scale(20, 20, 1)
+  const groundMesh = new THREE.Mesh(groundGeometry, stretchedMat)
+  groundMesh.receiveShadow = true
+  space.scene.add(groundMesh)
 
   space.initialLoad = true
 }
