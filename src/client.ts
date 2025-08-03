@@ -4,6 +4,7 @@ import { connectCanvas } from './canvas/canvas'
 import { initializeRapier } from './space/rapier.js'
 import { loadResources } from './textureLoader.js'
 import { setupLogin } from './login/login.js'
+import { connectItemPane } from './inventory/items.js'
 
 // defined in webpack configs, depending on environment
 declare const ENV_SERVER_ADDRESS: string
@@ -57,6 +58,7 @@ const showErrorOnLogin = (msg: string) => {
 
     const space = connectCanvas(socket)
     connectChat(socket, space)
+    connectItemPane(socket, space)
   } catch (e: any) {
     showErrorOnLogin(e.message)
     // TODO: catch extreme failures here (extreme login issue, rapier, resources)

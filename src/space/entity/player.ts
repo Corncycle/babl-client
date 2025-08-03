@@ -118,7 +118,6 @@ export class Player implements IEntity {
         Object.values(this.pressed!).some((val) => val === true) ||
         Object.values(this.justReleased!).some((val) => val === true)
       ) {
-        console.log(simulatedVelocity)
         this.updateInputHelper(t, simulatedVelocity)
       }
     }
