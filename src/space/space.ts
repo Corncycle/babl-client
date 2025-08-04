@@ -8,6 +8,13 @@ import { InputHelper } from './input.js'
 import { IEntity } from './entity/entity.js'
 import { Socket } from 'socket.io-client'
 import { handleMapLoad } from './map.js'
+import {
+  Particle,
+  ParticleSystem,
+  ParticleSystemType,
+} from './particles/particles.js'
+import { RedVialParticleSystem } from './particles/RedVial.js'
+import { BlueVialParticleSystem } from './particles/BlueVial.js'
 
 export class Space {
   scene: THREE.Scene
@@ -19,6 +26,7 @@ export class Space {
   eventHelper: EventHelper
   inputHelper: InputHelper
   playerNameToEntityMap: Map<string, IEntity>
+  particleSystems: ParticleSystem[]
 
   chatInputBox: HTMLInputElement
 
@@ -43,13 +51,14 @@ export class Space {
     this.scene.add(dirLight)
 
     this.world = new RAPIER.World({ x: 0, y: 0, z: -9.8 })
-    this.cameraHelper = new CameraHelper(5, 10, 30)
+    this.cameraHelper = new CameraHelper(10, 10, 30)
     this.renderer = renderer
 
     this.textHelper = textHelper
     this.eventHelper = new EventHelper(socket, 20)
     this.inputHelper = new InputHelper(container)
     this.playerNameToEntityMap = new Map()
+    this.particleSystems = []
 
     this.chatInputBox = document.querySelector('.chat-input')!
 
@@ -135,12 +144,37 @@ export class Space {
     this.textHelper.postMessage(name, msg)
   }
 
+  addParticleSystem(
+    type: ParticleSystemType,
+    x: number = 0,
+    y: number = 0,
+    z: number = 0
+  ) {
+    let ps
+    switch (type) {
+      case ParticleSystemType.VIAL_OF_RED_BREW:
+        ps = new RedVialParticleSystem(this, x, y, z)
+        break
+      case ParticleSystemType.VIAL_OF_BLUE_BREW:
+        ps = new BlueVialParticleSystem(this, x, y, z)
+        break
+    }
+    this.particleSystems.push(ps)
+  }
+
+  // delta is in seconds
   process(delta: number) {
     this.world.timestep = delta
     this.world.step()
 
     for (const entity of this.playerNameToEntityMap.values()) {
       entity.process(delta)
+    }
+
+    // TODO: call particle system cleanup here (and implement in the class)
+    this.particleSystems = this.particleSystems.filter((ps) => !ps.concluded)
+    for (const ps of this.particleSystems) {
+      ps.process(delta)
     }
   }
 

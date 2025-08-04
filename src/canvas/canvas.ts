@@ -7,7 +7,9 @@ export const connectCanvas = (socket: Socket) => {
   const container: HTMLDivElement = document.querySelector(
     '.game-canvas-container'
   )!
-  const renderer = new THREE.WebGLRenderer({ logarithmicDepthBuffer: true })
+  // TODO: look into why logarithmicDepthBuffer ruins depth ordering for shader materials
+  // const renderer = new THREE.WebGLRenderer({ logarithmicDepthBuffer: true })
+  const renderer = new THREE.WebGLRenderer()
   renderer.setSize(container.offsetWidth, container.offsetHeight)
   renderer.outputColorSpace = THREE.SRGBColorSpace
 

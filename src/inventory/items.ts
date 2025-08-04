@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io-client'
 import { Space } from '../space/space.js'
 import { randInt } from 'three/src/math/MathUtils.js'
+import { ParticleEvent } from '../space/particles/particles.js'
 
 const canvasContainer: HTMLDivElement = document.querySelector(
   '.game-canvas-container'
@@ -91,5 +92,9 @@ export const connectItemPane = (socket: Socket, space: Space) => {
 
   socket.on('removeItem', (item: Item) => {
     removeItemLocally(item.id)
+  })
+
+  socket.on('spawnParticles', (e: ParticleEvent) => {
+    space.addParticleSystem(e.type, e.x, e.y, e.z)
   })
 }

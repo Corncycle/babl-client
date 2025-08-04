@@ -2,29 +2,34 @@ import * as THREE from 'three'
 
 const game = document.querySelector('.babl-container')!
 
-const texturePaths: { [group: string]: { [type: string]: string } } = {
-  rockWall: {
-    // diff: 'textures/rock-wall-diff-4k.jpg',
-    // disp: 'textures/rock-wall-disp-4k.jpg',
-    // nor: 'textures/rock-wall-nor-4k.jpg',
-    diff: 'textures/rock-wall-diff-256.jpg',
-  },
-  test32: {
-    diff: 'textures/test-texture-diff-32.jpg',
-  },
-  test64: {
-    diff: 'textures/test-texture-diff-64.jpg',
-  },
-  mcGrass: {
-    diff: 'textures/mc-grass-diff-16.jpg',
-  },
-  mcDirt: {
-    diff: 'textures/mc-dirt-diff-16.jpg',
-  },
-  mcSteve: {
-    diff: 'textures/mc-steve-diff-8.jpg',
-  },
-}
+const texturePaths: { [group: string]: { [type: string]: string | boolean } } =
+  {
+    rockWall: {
+      // diff: 'textures/rock-wall-diff-4k.jpg',
+      // disp: 'textures/rock-wall-disp-4k.jpg',
+      // nor: 'textures/rock-wall-nor-4k.jpg',
+      diff: 'textures/rock-wall-diff-256.jpg',
+    },
+    test32: {
+      diff: 'textures/test-texture-diff-32.jpg',
+    },
+    test64: {
+      diff: 'textures/test-texture-diff-64.jpg',
+    },
+    mcGrass: {
+      diff: 'textures/mc-grass-diff-16.jpg',
+    },
+    mcDirt: {
+      diff: 'textures/mc-dirt-diff-16.jpg',
+    },
+    mcSteve: {
+      diff: 'textures/mc-steve-diff-8.jpg',
+    },
+    testParticle: {
+      diff: 'textures/test-particle-black.png',
+      skipMakingMaterial: true,
+    },
+  }
 
 export const textures: { [key: string]: THREE.Texture } = {}
 
@@ -51,7 +56,7 @@ export const loadResources = async () => {
     const group = texturePaths[texGroupName]
     if (group.diff) {
       try {
-        const tex = await loadTexture(loader, group.diff)
+        const tex = await loadTexture(loader, group.diff as string)
         tex.wrapS = THREE.RepeatWrapping
         tex.wrapT = THREE.RepeatWrapping
 
@@ -63,8 +68,10 @@ export const loadResources = async () => {
 
         textures[texGroupName] = tex
 
-        const mat = new THREE.MeshLambertMaterial({ map: tex })
-        materials[texGroupName] = mat
+        if (!group.skipMakingMaterial) {
+          const mat = new THREE.MeshLambertMaterial({ map: tex })
+          materials[texGroupName] = mat
+        }
       } catch (e) {
         throw new Error(`failed to load ${texGroupName} texture`)
       }
