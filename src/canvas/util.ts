@@ -41,7 +41,9 @@ export const solidExtrudedShapeFactory = (
   shape: THREE.Shape,
   centroid: THREE.Vector2,
   min: number = 0,
-  max: number = 1
+  max: number = 1,
+  top: string,
+  side: string
 ) => {
   const geo = new THREE.ExtrudeGeometry(shape, {
     bevelEnabled: false,
@@ -57,7 +59,10 @@ export const solidExtrudedShapeFactory = (
   myColliderDesc.setTranslation(centroid.x, centroid.y, 0)
   world.createCollider(myColliderDesc)
 
-  const mesh = new THREE.Mesh(geo, [materials.mcGrass, materials.mcDirt])
+  const mesh = new THREE.Mesh(geo, [
+    materials[top] || materials.rockWall,
+    materials[side] || materials.rockWall,
+  ])
   mesh.position.set(centroid.x, centroid.y, mesh.position.z)
 
   mesh.castShadow = true

@@ -13,9 +13,9 @@ export const connectCanvas = (socket: Socket) => {
   renderer.setSize(container.offsetWidth, container.offsetHeight)
   renderer.outputColorSpace = THREE.SRGBColorSpace
 
-  // TODO: tighten up shadows, until then disable them
-  // renderer.shadowMap.enabled = true
-  // renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  // TODO: follow camera with directional light so that shadows don't cut off
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
   container.appendChild(renderer.domElement)
 

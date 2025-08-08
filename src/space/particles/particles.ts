@@ -6,6 +6,7 @@ import { Space } from '../space.js'
 
 export interface Particle {
   position: THREE.Vector3
+  rotation: number
   velocity: THREE.Vector3
   damping: number
   size: number
@@ -42,10 +43,10 @@ export class ParticleSystem {
   constructor(space: Space, x: number = 0, y: number = 0, z: number = 0) {
     const uniforms = {
       diffuseTexture: {
-        value: textures.testParticle,
+        value: textures.smoke7,
       },
       pointMultiplier: {
-        value: 300,
+        value: 600,
       },
     }
 
@@ -109,11 +110,13 @@ export class ParticleSystem {
   // update the state of the buffer geometry with what is currently stored in this.particles
   updateGeometry() {
     const positions = []
+    const angles = []
     const sizes = []
     const colors = []
 
     for (let p of this.particles) {
       positions.push(p.position.x, p.position.y, p.position.z)
+      angles.push(p.rotation)
       sizes.push(p.size)
       colors.push(p.color.r, p.color.g, p.color.b, p.alpha)
     }
@@ -121,6 +124,10 @@ export class ParticleSystem {
     this.geometry.setAttribute(
       'position',
       new THREE.Float32BufferAttribute(positions, 3)
+    )
+    this.geometry.setAttribute(
+      'angle',
+      new THREE.Float32BufferAttribute(angles, 1)
     )
     this.geometry.setAttribute(
       'size',
@@ -132,6 +139,7 @@ export class ParticleSystem {
     )
 
     this.geometry.attributes.position.needsUpdate = true
+    this.geometry.attributes.angle.needsUpdate = true
     this.geometry.attributes.size.needsUpdate = true
     this.geometry.attributes.color.needsUpdate = true
   }

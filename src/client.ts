@@ -2,9 +2,13 @@ import { io } from 'socket.io-client'
 import { connectChat } from './chat/chat'
 import { connectCanvas } from './canvas/canvas'
 import { initializeRapier } from './space/rapier.js'
-import { loadResources } from './textureLoader.js'
+import { loadTextureResources } from './textureLoader.js'
 import { setupLogin } from './login/login.js'
 import { connectItemPane } from './inventory/items.js'
+import {
+  applyOverrideTexturesToModels,
+  loadModelResources,
+} from './modelLoader.js'
 
 // defined in webpack configs, depending on environment
 declare const ENV_SERVER_ADDRESS: string
@@ -39,19 +43,20 @@ const showErrorOnLogin = (msg: string) => {
   })
 
   const loginPromise = setupLogin(socket)
-
   const rapierPromise = initializeRapier()
-
-  const resourcesPromise = loadResources()
+  const texturesPromise = loadTextureResources()
+  const modelsPromise = loadModelResources()
 
   const allPromises = Promise.all([
     loginPromise,
     rapierPromise,
-    resourcesPromise,
+    texturesPromise,
+    modelsPromise,
   ])
 
   try {
     const results = await allPromises
+    applyOverrideTexturesToModels()
 
     loginContainer.classList.add('hidden')
     game.classList.remove('disabled')

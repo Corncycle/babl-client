@@ -1,7 +1,7 @@
 import RAPIER from '@dimforge/rapier3d-compat'
 import * as THREE from 'three'
 import { CameraHelper } from './camera.js'
-import { Player } from './entity/player.js'
+import { getModelFromName, Player } from './entity/player.js'
 import { TextHelper } from './text/text.js'
 import EventHelper from './eventHelper.js'
 import { InputHelper } from './input.js'
@@ -42,16 +42,17 @@ export class Space {
   ) {
     this.scene = new THREE.Scene()
 
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.15))
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.1))
     // directional lights point towards 0, 0, 0 by default
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1)
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3)
+    dirLight.shadow.intensity = 0.7
     // TODO: refine and enable shadows
-    // dirLight.castShadow = true
+    dirLight.castShadow = true
     dirLight.position.set(-15, -35, 50)
     this.scene.add(dirLight)
 
     this.world = new RAPIER.World({ x: 0, y: 0, z: -9.8 })
-    this.cameraHelper = new CameraHelper(10, 10, 30)
+    this.cameraHelper = new CameraHelper(15, 10, 30)
     this.renderer = renderer
 
     this.textHelper = textHelper
@@ -71,6 +72,7 @@ export class Space {
       this.localPlayer = new Player(
         { isLocal: true },
         e.name,
+        getModelFromName(e.name),
         Math.random(), // TODO: see if we need to actually give a proper entityId
         new THREE.Vector3(e.x, e.y, e.z),
         textHelper,
@@ -87,6 +89,7 @@ export class Space {
         const remotePlayer = new Player(
           { isLocal: false },
           e.name,
+          getModelFromName(e.name),
           Math.random(), // TODO: see if we need to actually give a proper entityId
           new THREE.Vector3(e.x, e.y, e.z),
           textHelper
@@ -101,6 +104,7 @@ export class Space {
       const remotePlayer = new Player(
         { isLocal: false },
         e.name,
+        getModelFromName(e.name),
         Math.random(), // TODO: see if we need to actually give a proper entityId
         new THREE.Vector3(e.x, e.y, e.z),
         textHelper
