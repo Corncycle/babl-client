@@ -19,6 +19,7 @@ import { BlueVialParticleSystem } from './particles/BlueVial.js'
 export class Space {
   scene: THREE.Scene
   world: RAPIER.World
+  shadowLight: THREE.Light
   cameraHelper: CameraHelper
   renderer: THREE.WebGLRenderer
 
@@ -43,20 +44,33 @@ export class Space {
     this.scene = new THREE.Scene()
 
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
-    // directional lights point towards 0, 0, 0 by default
-    const dirLight = new THREE.DirectionalLight(0xffffff, 3)
-    // dirLight.shadow.intensity = 1
-    dirLight.castShadow = true
-    dirLight.position.set(-15, 50, 50)
 
+    const shadowLightTarget = new THREE.Object3D()
+    this.scene.add(shadowLightTarget)
+    // directional lights point towards 0, 0, 0 by default
+    const shadowDirLight = new THREE.DirectionalLight(0xffffff, 3)
+    shadowDirLight.target = shadowLightTarget
+    this.shadowLight = shadowDirLight
+    // dirLight.shadow.intensity = 1
+    shadowDirLight.castShadow = true
+    shadowDirLight.position.set(-25, 50, 50)
+
+    // this extra directional light casts no shadows and just serves to slightly light
+    // details of objects from the perspective of the game camera
     const extraDirLight = new THREE.DirectionalLight(0xffffff, 0.8)
     extraDirLight.position.set(-405, -25, 0)
 
-    this.scene.add(dirLight)
+    this.scene.add(shadowDirLight)
     this.scene.add(extraDirLight)
 
     this.world = new RAPIER.World({ x: 0, y: 0, z: -9.8 })
-    this.cameraHelper = new CameraHelper(15, 10, 30)
+    this.cameraHelper = new CameraHelper(
+      15,
+      10,
+      30,
+      this.shadowLight,
+      shadowLightTarget
+    )
     this.renderer = renderer
 
     this.textHelper = textHelper
