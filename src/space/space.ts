@@ -42,14 +42,18 @@ export class Space {
   ) {
     this.scene = new THREE.Scene()
 
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.1))
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
     // directional lights point towards 0, 0, 0 by default
     const dirLight = new THREE.DirectionalLight(0xffffff, 3)
-    dirLight.shadow.intensity = 0.7
-    // TODO: refine and enable shadows
+    // dirLight.shadow.intensity = 1
     dirLight.castShadow = true
-    dirLight.position.set(-15, -35, 50)
+    dirLight.position.set(-15, 50, 50)
+
+    const extraDirLight = new THREE.DirectionalLight(0xffffff, 0.8)
+    extraDirLight.position.set(-405, -25, 0)
+
     this.scene.add(dirLight)
+    this.scene.add(extraDirLight)
 
     this.world = new RAPIER.World({ x: 0, y: 0, z: -9.8 })
     this.cameraHelper = new CameraHelper(15, 10, 30)
