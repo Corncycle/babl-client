@@ -58,7 +58,7 @@ export class CameraHelper {
     this.shadowLight = shadowLight
     this.shadowLightTarget = shadowLightTarget
     this.shadowLightXOffset = -25
-    this.shadowLightYOffset = 50
+    this.shadowLightYOffset = -50
 
     this.moveTo(0, 0)
   }
@@ -79,7 +79,6 @@ export class CameraHelper {
         y + this.shadowLightYOffset,
         this.shadowLight.position.z
       )
-      console.log(this.shadowLight.position)
     }
   }
 }

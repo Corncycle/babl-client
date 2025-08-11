@@ -29,6 +29,8 @@ export class Player implements IEntity {
   static shadowGeometry = new THREE.CircleGeometry(0.45, 16).rotateX(Math.PI)
   static up = new THREE.Vector3(0, 0, 1)
 
+  playerSpeed: number = 1.6
+
   name: string
   entityId: number
 
@@ -175,7 +177,10 @@ export class Player implements IEntity {
   lerpFacingDirectionTowardsVelocity(delta: number) {
     if (this.velocity.x !== 0 || this.velocity.y !== 0) {
       const normalized = this.velocity.clone().normalize()
-      this.facingDirection.lerp(this.velocity, Math.min(10 * delta, 1))
+      this.facingDirection.lerp(
+        this.velocity,
+        Math.min(10 * this.playerSpeed * delta, 1)
+      )
       // this.facingDirection.set(this.velocity.x, this.velocity.y).normalize()
     }
   }
@@ -240,16 +245,16 @@ export class Player implements IEntity {
       // pressed, justPressed, and justReleased will always be defined
       // for the local player
       if (this.pressed!.left) {
-        xv -= 1
+        xv -= this.playerSpeed
       }
       if (this.pressed!.right) {
-        xv += 1
+        xv += this.playerSpeed
       }
       if (this.pressed!.up) {
-        yv += 1
+        yv += this.playerSpeed
       }
       if (this.pressed!.down) {
-        yv -= 1
+        yv -= this.playerSpeed
       }
 
       this.setPlanarLinvel(xv, yv)

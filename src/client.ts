@@ -18,6 +18,8 @@ const loginContainer: HTMLDivElement =
 const game = document.querySelector('.babl-container')!
 const loginFeedback: HTMLSpanElement =
   document.querySelector('.login-feedback')!
+const loginInput: HTMLInputElement = document.querySelector('.login-input')!
+const loginButton: HTMLButtonElement = document.querySelector('.login-button')!
 
 const showErrorOnLogin = (msg: string) => {
   loginFeedback.innerText = msg
@@ -48,7 +50,6 @@ const showErrorOnLogin = (msg: string) => {
   const modelsPromise = loadModelResources()
 
   const allPromises = Promise.all([
-    loginPromise,
     rapierPromise,
     texturesPromise,
     modelsPromise,
@@ -56,6 +57,15 @@ const showErrorOnLogin = (msg: string) => {
 
   try {
     const results = await allPromises
+
+    // setTimeout(() => {
+    //   loginInput.value = 'test user'
+    //   loginButton.click()
+    //   console.log('trying')
+    // }, 0)
+
+    await loginPromise
+
     applyOverrideTexturesToModels()
 
     loginContainer.classList.add('hidden')

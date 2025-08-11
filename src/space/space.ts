@@ -42,6 +42,10 @@ export class Space {
     textHelper: TextHelper
   ) {
     this.scene = new THREE.Scene()
+    // PBR stuff we'll probably never do
+    // this.scene.environment = skyTexture
+    // this.scene.background = skyTexture
+    // this.scene.environmentIntensity = 1.0
 
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.6))
 
@@ -53,12 +57,12 @@ export class Space {
     this.shadowLight = shadowDirLight
     // dirLight.shadow.intensity = 1
     shadowDirLight.castShadow = true
-    shadowDirLight.position.set(-25, 50, 50)
+    shadowDirLight.position.set(-25, -50, 50)
 
     // this extra directional light casts no shadows and just serves to slightly light
     // details of objects from the perspective of the game camera
     const extraDirLight = new THREE.DirectionalLight(0xffffff, 0.8)
-    extraDirLight.position.set(-405, -25, 0)
+    extraDirLight.position.set(-405, 25, 0)
 
     this.scene.add(shadowDirLight)
     this.scene.add(extraDirLight)

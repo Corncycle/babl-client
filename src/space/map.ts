@@ -34,16 +34,16 @@ export const handleMapLoad = (space: Space, mapData: any) => {
     }
   }
 
-  const groundColliderDesc = RAPIER.ColliderDesc.cuboid(100, 100, 0.5)
+  const groundColliderDesc = RAPIER.ColliderDesc.cuboid(200, 200, 0.5)
   groundColliderDesc.setTranslation(0, 0, -0.5)
   space.world.createCollider(groundColliderDesc)
 
   const groundGeometry = new THREE.PlaneGeometry(1, 1)
-  const cloneTex = textures.mcGrass.clone()
-  cloneTex.repeat.set(200, 200)
+  const cloneTex = textures.sand.clone()
+  cloneTex.repeat.set(400, 400)
   const stretchedMat = new THREE.MeshLambertMaterial({ map: cloneTex })
 
-  groundGeometry.scale(200, 200, 1)
+  groundGeometry.scale(400, 400, 1)
   const groundMesh = new THREE.Mesh(groundGeometry, stretchedMat)
   groundMesh.receiveShadow = true
   space.scene.add(groundMesh)
