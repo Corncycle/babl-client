@@ -19,7 +19,7 @@ import { BlueVialParticleSystem } from './particles/BlueVial.js'
 export class Space {
   scene: THREE.Scene
   world: RAPIER.World
-  shadowLight: THREE.Light
+  shadowLight: THREE.DirectionalLight
   cameraHelper: CameraHelper
   renderer: THREE.WebGLRenderer
 
@@ -57,7 +57,12 @@ export class Space {
     this.shadowLight = shadowDirLight
     // dirLight.shadow.intensity = 1
     shadowDirLight.castShadow = true
-    shadowDirLight.position.set(-25, -50, 50)
+    shadowDirLight.position.set(-25, 40, 50)
+    shadowDirLight.shadow.camera.left = -8
+    shadowDirLight.shadow.camera.right = 8
+    shadowDirLight.shadow.camera.bottom = -8
+    shadowDirLight.shadow.camera.top = 8
+    shadowDirLight.shadow.mapSize = new THREE.Vector2(1024, 1024)
 
     // this extra directional light casts no shadows and just serves to slightly light
     // details of objects from the perspective of the game camera

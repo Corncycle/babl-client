@@ -58,7 +58,7 @@ export class CameraHelper {
     this.shadowLight = shadowLight
     this.shadowLightTarget = shadowLightTarget
     this.shadowLightXOffset = -25
-    this.shadowLightYOffset = -50
+    this.shadowLightYOffset = 40
 
     this.moveTo(0, 0)
   }
