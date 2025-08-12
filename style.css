@@ -156,6 +156,10 @@ body {
 .side-panel {
     border: 1px solid black;
     width: 300px;
+
+    display: flex;
+    flex-direction: column;
+
 }
 
 .login-container {
@@ -223,4 +227,61 @@ body {
     font-size: 16px;
     font-family: monospace;
     color: white;
+}
+
+/* items */
+.item-container, .item-buttons-container, .item-icon {
+    --item-padding: 4px;
+}
+
+.item-container {
+    display: flex;
+    position: relative;
+
+    gap: 8px;
+
+    margin: 4px;
+    margin-bottom: 0;
+    
+    border: 1px solid black;
+    /* item height + padding + 2px border for container + 2px border for item image */
+    height: calc(32px + 2 * var(--item-padding) + 2px + 2px);
+    padding: var(--item-padding);
+
+    user-select: none;
+}
+
+.item-icon {
+    border: 1px solid black;
+    background: salmon;
+    width: calc(32px + 2px);
+    height: calc(32px + 2px);
+}
+
+.item-container:hover .item-buttons-container {
+    display: flex;
+}
+
+.item-buttons-container {
+    display: none;
+    position: absolute;
+
+    gap: 8px;
+
+    right: 0;
+    bottom: 0;
+    margin: var(--item-padding);
+
+    user-select: unset;
+}
+
+.item-button {
+    color: blue;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.item-button:hover {
+    text-decoration: 1px underline;
 }
