@@ -10,21 +10,30 @@ import { models } from '../../modelLoader.js'
 import { lerp } from 'three/src/math/MathUtils.js'
 
 export const getModelFromName = (name: string) => {
+  if (name === 'babl') {
+    return PlayerModel.TETRAHEDRON
+  }
+
   const firstLetter = name[0].toLowerCase()
-  if (firstLetter <= 'm') {
-    return PlayerModel.EAR
-  } else {
+  if (firstLetter <= 'i') {
     return PlayerModel.HAND
+  } else if (firstLetter <= 'r') {
+    return PlayerModel.NOSE
+  } else {
+    return PlayerModel.EAR
   }
 }
 
 export enum PlayerModel {
   EAR,
   HAND,
+  NOSE,
   SPHERE,
+  TETRAHEDRON,
 }
 
 export class Player implements IEntity {
+  static tetraGeometry = new THREE.TetrahedronGeometry(0.7)
   static geometry = new THREE.SphereGeometry(0.5, 16, 8)
   static shadowGeometry = new THREE.CircleGeometry(0.45, 16).rotateX(Math.PI)
   static up = new THREE.Vector3(0, 0, 1)
@@ -76,8 +85,14 @@ export class Player implements IEntity {
       case PlayerModel.HAND:
         this.mesh = models.hand.clone()
         break
+      case PlayerModel.NOSE:
+        this.mesh = models.nose.clone()
+        break
       case PlayerModel.SPHERE:
         this.mesh = new THREE.Mesh(Player.geometry, materials.mcSteve)
+        break
+      case PlayerModel.TETRAHEDRON:
+        this.mesh = new THREE.Mesh(Player.tetraGeometry, materials.skin)
         break
     }
     this.shadowMesh = new THREE.Mesh(
@@ -88,7 +103,10 @@ export class Player implements IEntity {
     this.shadowMesh.castShadow = true
 
     // TODO: fix this so we don't have to track children
-    this.mesh.children[0].receiveShadow = true
+    this.mesh.receiveShadow = true
+    if (this.mesh.children[0]) {
+      this.mesh.children[0].receiveShadow = true
+    }
 
     this.object3d.add(this.mesh)
     this.object3d.add(this.shadowMesh)

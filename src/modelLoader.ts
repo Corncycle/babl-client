@@ -8,18 +8,27 @@ const modelSpecs: {
   [name: string]: {
     path: string
     scale?: number | { x: number; y: number; z: number }
+    rotation?: { x?: number; y?: number; z?: number }
+    translation?: { x?: number; y?: number; z?: number }
     materialOverride?: string
   }
 } = {
   ear: {
     path: 'models/ear.glb',
-    scale: { x: 0.5, y: 0.5, z: 0.35 },
+    scale: { x: 0.47, y: 0.47, z: 0.33 },
     materialOverride: 'skin',
   },
   hand: {
     path: 'models/hand.glb',
     scale: 0.07,
     materialOverride: 'skin',
+  },
+  nose: {
+    path: 'models/nose.glb',
+    scale: { x: 0.11, y: 0.08, z: 0.11 },
+    materialOverride: 'skin',
+    rotation: { x: -Math.PI / 2 },
+    translation: { y: 1.2, z: -0.5 },
   },
 }
 
@@ -54,6 +63,32 @@ export const loadModelResources = async () => {
           scene.scale.set(scale, scale, scale)
         } else {
           scene.scale.set(scale.x, scale.y, scale.z)
+        }
+      }
+
+      if (modelSpecs[name].rotation) {
+        const rot = modelSpecs[name].rotation
+        if (rot.x) {
+          scene.children[0].rotateX(rot.x)
+        }
+        if (rot.y) {
+          scene.children[0].rotateY(rot.y)
+        }
+        if (rot.z) {
+          scene.children[0].rotateZ(rot.z)
+        }
+      }
+
+      if (modelSpecs[name].translation) {
+        const trans = modelSpecs[name].translation
+        if (trans.x) {
+          scene.children[0].translateX(trans.x)
+        }
+        if (trans.y) {
+          scene.children[0].translateY(trans.y)
+        }
+        if (trans.z) {
+          scene.children[0].translateZ(trans.z)
         }
       }
 

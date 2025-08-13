@@ -63,6 +63,7 @@ export class Space {
     shadowDirLight.shadow.camera.bottom = -8
     shadowDirLight.shadow.camera.top = 8
     shadowDirLight.shadow.mapSize = new THREE.Vector2(1024, 1024)
+    shadowDirLight.shadow.bias = 0.00004
 
     // this extra directional light casts no shadows and just serves to slightly light
     // details of objects from the perspective of the game camera
